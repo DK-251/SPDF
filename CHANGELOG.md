@@ -35,8 +35,11 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 - `conftest.py`: `client` fixture now includes auth headers by default; added `raw_client`, `auth_headers`, `_reset_stores` (autouse) fixtures
 - `main.py`: wired RateLimitMiddleware + account router + test user seeding
 
+### Fixed
+- Replaced `passlib[bcrypt]` with direct `bcrypt>=4.0.0` -- passlib incompatible with bcrypt 4.x (`__about__` removed, strict 72-byte limit in bug detection)
+
 ### Build Target
-- [ ] just check -- pending TUF verification
+- [x] just check -- ALL PASS (93 Rust + 61 Python tests)
 
 ---
 

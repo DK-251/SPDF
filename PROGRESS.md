@@ -6,7 +6,7 @@
 ## Current State
 - **Version:** 0.1.0-snapshot.7
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 in progress — account endpoints + rate limiting implemented, pending TUF verification
+- **Status:** Week 3 complete — all checks green (93 Rust + 61 Python tests), `just check` fully operational
 
 ---
 
@@ -90,3 +90,4 @@
 | 2026-03-25 | check.ps1: PS backtick escapes, broken `*>` redirection, array flattening | Rewrote with `[char]96`, `Out-String` capture, `ArrayList` collections | 0.1.0-s.6 |
 | 2026-03-25 | pyproject.toml: `setuptools.backends._legacy` unavailable on TUF | Changed build-backend to `setuptools.build_meta` | 0.1.0-s.6 |
 | 2026-03-25 | maturin develop: no virtualenv found on TUF global Python | check.ps1 now creates `.venv` and sets `VIRTUAL_ENV` before Python steps | 0.1.0-s.6 |
+| 2026-03-26 | passlib incompatible with bcrypt 4.x (`__about__` removed, 72-byte strict limit) | Replaced `passlib[bcrypt]` with direct `bcrypt>=4.0.0` API | 0.1.0-s.7 |
