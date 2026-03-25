@@ -590,12 +590,7 @@ fn full_invoice_document_serde() {
                 }),
                 Element::LineItemTable(LineItemTableElement {
                     eid: eid(),
-                    headers: vec![
-                        "Item".into(),
-                        "Qty".into(),
-                        "Rate".into(),
-                        "Amount".into(),
-                    ],
+                    headers: vec!["Item".into(), "Qty".into(), "Rate".into(), "Amount".into()],
                     rows: vec![vec![
                         TableCell {
                             value: "API Integration".into(),

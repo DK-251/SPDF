@@ -155,27 +155,15 @@ pub fn read_container(data: &[u8]) -> SpdfResult<ExtractedLayers> {
         "layers/semantic.json",
         &mut total_decompressed,
     )?;
-    let layout = read_entry(
-        &mut archive,
-        "layers/layout.json",
-        &mut total_decompressed,
-    )?;
-    let styles = read_entry(
-        &mut archive,
-        "layers/styles.json",
-        &mut total_decompressed,
-    )?;
+    let layout = read_entry(&mut archive, "layers/layout.json", &mut total_decompressed)?;
+    let styles = read_entry(&mut archive, "layers/styles.json", &mut total_decompressed)?;
     let render = read_entry(&mut archive, "layers/render.pdf", &mut total_decompressed)?;
     let metadata = read_entry(
         &mut archive,
         "layers/metadata.json",
         &mut total_decompressed,
     )?;
-    let audit = read_entry(
-        &mut archive,
-        "layers/audit.json",
-        &mut total_decompressed,
-    )?;
+    let audit = read_entry(&mut archive, "layers/audit.json", &mut total_decompressed)?;
 
     // Verify layer checksums
     verify_checksum("semantic", &manifest.layers.semantic, &semantic)?;
