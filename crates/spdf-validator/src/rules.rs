@@ -161,7 +161,9 @@ fn check_element(element: &Element, path: &str, errors: &mut Vec<ValidationError
             }
         }
         Element::Table(t) => {
-            check_table_headers(&t.headers, &t.rows.iter().map(|r| &r.cells).collect::<Vec<_>>(), path, errors);
+            let row_slices: Vec<&[TableCell]> =
+                t.rows.iter().map(|r| r.cells.as_slice()).collect();
+            check_table_headers(&t.headers, &row_slices, path, errors);
         }
         Element::InvoiceHeader(ih) => {
             if ih.invoice_number.trim().is_empty() {
@@ -173,7 +175,9 @@ fn check_element(element: &Element, path: &str, errors: &mut Vec<ValidationError
             }
         }
         Element::LineItemTable(lt) => {
-            check_table_headers(&lt.headers, &lt.rows.iter().map(|r| r.as_slice()).collect::<Vec<_>>(), path, errors);
+            let row_slices: Vec<&[TableCell]> =
+                lt.rows.iter().map(|r| r.as_slice()).collect();
+            check_table_headers(&lt.headers, &row_slices, path, errors);
         }
         Element::PaymentTerms(pt) => {
             if pt.total.trim().is_empty() {

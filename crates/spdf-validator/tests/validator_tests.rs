@@ -273,12 +273,16 @@ fn e003_duplicate_element_id() {
 
 // ---------- Manifest validation ----------
 
-#[test]
-fn valid_manifest_passes() {
-    let mut manifest = Manifest::new(DocumentId::new(), GeneratorInfo {
+fn test_gen() -> GeneratorInfo {
+    GeneratorInfo {
         name: "test".to_string(),
         version: "0.1.0".to_string(),
-    });
+    }
+}
+
+#[test]
+fn valid_manifest_passes() {
+    let mut manifest = Manifest::new(DocumentId::new(), test_gen());
     manifest.layers.semantic = "a".repeat(64);
     manifest.layers.layout = "b".repeat(64);
     manifest.layers.styles = "c".repeat(64);
@@ -293,10 +297,7 @@ fn valid_manifest_passes() {
 
 #[test]
 fn f003_wrong_manifest_format() {
-    let mut manifest = Manifest::new(DocumentId::new(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let mut manifest = Manifest::new(DocumentId::new(), test_gen());
     manifest.format = "PDF".to_string();
     manifest.finalize();
 
@@ -306,22 +307,19 @@ fn f003_wrong_manifest_format() {
 
 #[test]
 fn f004_empty_layer_checksum() {
-    let manifest = Manifest::new(DocumentId::new(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let manifest = Manifest::new(DocumentId::new(), test_gen());
     // All layer checksums are empty by default (no finalize)
     let report = validate_manifest(&manifest);
     assert!(report.errors.iter().any(|e| e.code == "F_004"));
-    assert_eq!(report.errors.iter().filter(|e| e.code == "F_004").count(), 6);
+    assert_eq!(
+        report.errors.iter().filter(|e| e.code == "F_004").count(),
+        6
+    );
 }
 
 #[test]
 fn f005_empty_manifest_hash() {
-    let mut manifest = Manifest::new(DocumentId::new(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let mut manifest = Manifest::new(DocumentId::new(), test_gen());
     manifest.layers.semantic = "a".repeat(64);
     manifest.layers.layout = "b".repeat(64);
     manifest.layers.styles = "c".repeat(64);

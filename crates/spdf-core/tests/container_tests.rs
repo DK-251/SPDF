@@ -1,6 +1,6 @@
 use std::io::{Cursor, Write};
 
-use spdf_core::container::{read_container, write_container, ContainerLayers, ExtractedLayers};
+use spdf_core::container::{read_container, write_container, ContainerLayers};
 use spdf_core::manifest::{sha256_hex, Manifest};
 use spdf_core::types::{DocumentId, GeneratorInfo};
 

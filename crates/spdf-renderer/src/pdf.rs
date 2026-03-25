@@ -60,7 +60,7 @@ pub fn render_to_pdf(doc: &Document) -> SpdfResult<Vec<u8>> {
 
         let content = Content { operations: ops };
         let content_bytes = content.encode()
-            .map_err(|e| SpdfError::Io(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())))?;
+            .map_err(|e| SpdfError::Io(std::io::Error::other(e.to_string())))?;
 
         let content_id = pdf.add_object(Stream::new(dictionary! {}, content_bytes));
 
@@ -78,7 +78,7 @@ pub fn render_to_pdf(doc: &Document) -> SpdfResult<Vec<u8>> {
     if page_ids.is_empty() {
         let content = Content { operations: vec![] };
         let content_bytes = content.encode()
-            .map_err(|e| SpdfError::Io(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())))?;
+            .map_err(|e| SpdfError::Io(std::io::Error::other(e.to_string())))?;
         let content_id = pdf.add_object(Stream::new(dictionary! {}, content_bytes));
         let page_id = pdf.add_object(dictionary! {
             "Type" => "Page",
@@ -106,7 +106,7 @@ pub fn render_to_pdf(doc: &Document) -> SpdfResult<Vec<u8>> {
 
     let mut buf = Vec::new();
     pdf.save_to(&mut buf)
-        .map_err(|e| SpdfError::Io(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())))?;
+        .map_err(|e| SpdfError::Io(std::io::Error::other(e.to_string())))?;
 
     Ok(buf)
 }

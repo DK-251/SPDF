@@ -28,6 +28,7 @@ pub struct ContainerLayers {
 }
 
 /// Layers extracted from reading a container.
+#[derive(Debug)]
 pub struct ExtractedLayers {
     pub manifest: Manifest,
     pub semantic: Vec<u8>,
