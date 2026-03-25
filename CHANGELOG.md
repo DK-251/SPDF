@@ -10,6 +10,24 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.6] - 2026-03-25
+
+### Added
+- Unified `just check` script (`scripts/check.ps1`) — runs Rust (fmt + clippy + test) and Python (pip install + maturin develop + pytest) in one pass
+- Structured `CHECK_RESULTS.md` output with pass/fail per step, failure details, and test summary counts
+- 14 new API edge case tests (30 total): empty file, no file field, missing fields, wrong content type, non-invoice extract, financial string preservation, custom layers, method-not-allowed
+- 3 new Rust validator tests: E_011 (redaction empty eid), LineItemTable E_007/E_008 coverage
+- `sample_non_invoice_semantic` fixture for testing extract on plain documents
+
+### Changed
+- `just check` now runs full CI (Rust + Python) instead of Rust-only bare commands
+- Removed separate `.log` files — all output captured inline in CHECK_RESULTS.md
+
+### Build Target
+- [ ] just check (produces .build-results/CHECK_RESULTS.md)
+
+---
+
 ## [0.1.0-snapshot.5] - 2026-03-25
 
 ### Added

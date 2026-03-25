@@ -254,6 +254,53 @@ fn e013_empty_variable_name() {
     assert!(report.errors.iter().any(|e| e.code == "E_013"));
 }
 
+// ---------- E_011: Redaction empty element ID ----------
+
+#[test]
+fn e011_redaction_empty_redacted_eid() {
+    let mut doc = valid_doc();
+    doc.pages[0].elements = vec![Element::Redaction(RedactionElement {
+        eid: eid(),
+        redacted_eid: ElementId("".to_string()),
+        reason: "PII removal".to_string(),
+        erasure_proof_hash: "abc123".to_string(),
+        timestamps: ts(),
+    })];
+    let report = validate_document(&doc);
+    assert!(report.errors.iter().any(|e| e.code == "E_011"));
+}
+
+// ---------- LineItemTable validation ----------
+
+#[test]
+fn e007_line_item_table_no_headers() {
+    let mut doc = valid_doc();
+    doc.pages[0].elements = vec![Element::LineItemTable(LineItemTableElement {
+        eid: eid(),
+        headers: vec![],
+        rows: vec![],
+        timestamps: ts(),
+    })];
+    let report = validate_document(&doc);
+    assert!(report.errors.iter().any(|e| e.code == "E_007"));
+}
+
+#[test]
+fn e008_line_item_table_row_cell_mismatch() {
+    let mut doc = valid_doc();
+    doc.pages[0].elements = vec![Element::LineItemTable(LineItemTableElement {
+        eid: eid(),
+        headers: vec!["Desc".into(), "Qty".into(), "Amount".into()],
+        rows: vec![vec![TableCell {
+            value: "only one".into(),
+            spdf_type: None,
+        }]],
+        timestamps: ts(),
+    })];
+    let report = validate_document(&doc);
+    assert!(report.errors.iter().any(|e| e.code == "E_008"));
+}
+
 // ---------- Duplicate EID ----------
 
 #[test]

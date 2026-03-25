@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.5
+- **Version:** 0.1.0-snapshot.6
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 in progress — FastAPI app + 6 endpoints (generate, validate, render, parse, extract, health) + 16 tests
+- **Status:** Week 3 in progress — unified `just check` (Rust + Python), 30 API tests, all edge cases covered
 
 ---
 
@@ -41,7 +41,8 @@
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
 | 11 | PyO3 bindings | DONE | 0.1.0-s.4 | 5 PyO3 functions + SpdfEngine wrapper + 20 binding logic tests + 6 regression tests |
-| 12-13 | Document generation + extraction endpoints | DONE | 0.1.0-s.5 | FastAPI app, 6 endpoints, Pydantic schemas, error handling, 16 tests |
+| 12-13 | Document generation + extraction endpoints | DONE | 0.1.0-s.5 | FastAPI app, 6 endpoints, Pydantic schemas, error handling |
+| 12-13 | Test wiring + edge cases + unified check | DONE | 0.1.0-s.6 | 30 API tests, 3 new validator tests, unified `just check` script |
 | 14-15 | Account endpoints + rate limiting | TODO | — | |
 
 ### Week 4: Auth & Billing

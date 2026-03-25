@@ -123,6 +123,43 @@ def sample_semantic() -> dict[str, Any]:
 
 
 @pytest.fixture()
+def sample_non_invoice_semantic() -> dict[str, Any]:
+    """A valid document with no invoice elements (just a heading + paragraph)."""
+    now = _now_iso()
+    return {
+        "spdf:version": {"major": 1, "minor": 0},
+        "document_id": f"spdf-{uuid.uuid4()}",
+        "title": "Plain Document",
+        "locale": "en-US",
+        "direction": "LTR",
+        "document_state": "DRAFT",
+        "pages": [
+            {
+                "eid": _eid(),
+                "page_number": 1,
+                "elements": [
+                    {
+                        "element_type": "Heading",
+                        "eid": _eid(),
+                        "level": 1,
+                        "text": "Chapter One",
+                        "created_at": now,
+                        "modified_at": now,
+                    },
+                    {
+                        "element_type": "Paragraph",
+                        "eid": _eid(),
+                        "text": "This document has no invoice data.",
+                        "created_at": now,
+                        "modified_at": now,
+                    },
+                ],
+            }
+        ],
+    }
+
+
+@pytest.fixture()
 def sample_spdf_bytes(
     client: TestClient,
     sample_semantic: dict[str, Any],
