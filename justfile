@@ -50,8 +50,12 @@ fmt:
 fmt-check:
     cargo fmt --all -- --check
 
-# Full Rust CI check (format + lint + test)
+# Full Rust CI check (format + lint + test) — no logs
 check: fmt-check lint test
+
+# Full Rust CI check with captured logs for review (run on ASUS TUF)
+check-log:
+    powershell -ExecutionPolicy Bypass -File scripts/check-log.ps1
 
 # --- Python API ---
 
