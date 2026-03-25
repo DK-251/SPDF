@@ -140,17 +140,24 @@ fn full_round_trip_invoice() {
     };
 
     // 6. Write to .spdf container
-    let mut manifest = Manifest::new(doc.document_id.clone(), GeneratorInfo {
-        name: "spdf-integration-test".to_string(),
-        version: "0.1.0".to_string(),
-    });
-    let container_bytes = write_container(&mut manifest, &layers, &[])
-        .expect("Container write failed");
+    let mut manifest = Manifest::new(
+        doc.document_id.clone(),
+        GeneratorInfo {
+            name: "spdf-integration-test".to_string(),
+            version: "0.1.0".to_string(),
+        },
+    );
+    let container_bytes =
+        write_container(&mut manifest, &layers, &[]).expect("Container write failed");
     assert!(container_bytes.len() > 0);
 
     // 7. Validate the manifest
     let manifest_report = validate_manifest(&manifest);
-    assert!(manifest_report.is_valid(), "Manifest validation failed: {:?}", manifest_report.errors);
+    assert!(
+        manifest_report.is_valid(),
+        "Manifest validation failed: {:?}",
+        manifest_report.errors
+    );
 
     // 8. Read container back
     let extracted = read_container(&container_bytes).expect("Container read failed");
@@ -160,15 +167,19 @@ fn full_round_trip_invoice() {
     assert_eq!(extracted.manifest.format, "SPDF");
 
     // 10. Deserialize the semantic layer back to a Document
-    let rt_doc: Document = serde_json::from_slice(&extracted.semantic)
-        .expect("DOM deserialization failed");
+    let rt_doc: Document =
+        serde_json::from_slice(&extracted.semantic).expect("DOM deserialization failed");
     assert_eq!(rt_doc.title, "Invoice INV-2026-100");
     assert_eq!(rt_doc.pages.len(), 1);
     assert_eq!(rt_doc.pages[0].elements.len(), 7);
 
     // 11. Validate the round-tripped document
     let rt_report = validate_document(&rt_doc);
-    assert!(rt_report.is_valid(), "Round-tripped doc validation failed: {:?}", rt_report.errors);
+    assert!(
+        rt_report.is_valid(),
+        "Round-tripped doc validation failed: {:?}",
+        rt_report.errors
+    );
 
     // 12. Verify the rendered PDF layer starts with %PDF-
     assert_eq!(&extracted.render[..5], b"%PDF-");
@@ -255,10 +266,13 @@ fn multi_page_round_trip() {
         audit: b"{}".to_vec(),
     };
 
-    let mut manifest = Manifest::new(doc.document_id.clone(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let mut manifest = Manifest::new(
+        doc.document_id.clone(),
+        GeneratorInfo {
+            name: "test".to_string(),
+            version: "0.1.0".to_string(),
+        },
+    );
     let bytes = write_container(&mut manifest, &layers, &[]).unwrap();
     let extracted = read_container(&bytes).unwrap();
     let rt_doc: Document = serde_json::from_slice(&extracted.semantic).unwrap();
@@ -305,10 +319,13 @@ fn round_trip_with_assets() {
     };
 
     let assets = vec![("logo-001.png".to_string(), logo_data.clone())];
-    let mut manifest = Manifest::new(doc.document_id.clone(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let mut manifest = Manifest::new(
+        doc.document_id.clone(),
+        GeneratorInfo {
+            name: "test".to_string(),
+            version: "0.1.0".to_string(),
+        },
+    );
 
     let bytes = write_container(&mut manifest, &layers, &assets).unwrap();
     let extracted = read_container(&bytes).unwrap();

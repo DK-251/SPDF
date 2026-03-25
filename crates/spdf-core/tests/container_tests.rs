@@ -233,7 +233,9 @@ fn read_zip_missing_layer() {
 #[test]
 fn large_layer_round_trip() {
     let mut manifest = Manifest::new(DocumentId::new(), test_generator());
-    let big_data: Vec<u8> = (0..1024 * 1024).map(|i| (i % 256) as u8).collect(); // 1 MB, varied
+    let big_data: Vec<u8> = (0u32..1024 * 1024)
+        .map(|i| i.wrapping_mul(2654435761).to_ne_bytes()[0])
+        .collect();
     let layers = ContainerLayers {
         semantic: big_data.clone(),
         layout: b"{}".to_vec(),
