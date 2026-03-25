@@ -10,6 +10,23 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.2] - 2026-03-25
+
+### Added
+- `spdf-core` container round-trip tests (13 tests: write/read, checksums, assets, corruption)
+- `spdf-core` DOM serialization tests (30 tests: all 18 element variants, types, state transitions)
+- `spdf-validator` full implementation: 13 validation rules (E_001–E_013, F_001–F_005)
+- `spdf-validator` tests (20 tests: every error code, manifest validation, report helpers)
+- `spdf-renderer` PDF generation via lopdf (headings, paragraphs, tables, invoices, signatures)
+- Integration test: create → validate → render PDF → write container → read → validate
+
+### Build Target
+- [ ] cargo build --workspace
+- [ ] cargo test --workspace
+- [ ] cargo clippy -- -D warnings
+
+---
+
 ## [0.1.0-snapshot.1] - 2026-03-25
 
 ### Added

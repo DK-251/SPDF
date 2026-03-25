@@ -14,3 +14,6 @@ serde_json.workspace = true
 thiserror.workspace = true
 log.workspace = true
 lopdf = "0.34"
+
+[dev-dependencies]
+spdf-validator = { path = "../spdf-validator" }

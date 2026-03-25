@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.1
+- **Version:** 0.1.0-snapshot.2
 - **Phase:** 1 — Foundation
-- **Status:** Scaffold complete, first green build on TUF
+- **Status:** Week 2 complete — tests, validator, renderer, integration test
 
 ---
 
@@ -26,11 +26,11 @@
 
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
-| 6 | Container tests | TODO | — | Round-trip: create → write → read → validate |
-| 7 | DOM serialization tests | TODO | — | All 25 elements serialize/deserialize correctly |
-| 8 | Document validator | TODO | — | E_ and F_ error codes, structural rules |
-| 9 | PDF renderer (basic) | TODO | — | Text, tables, images via lopdf |
-| 10 | Integration test | TODO | — | Full round-trip: create → write → read → validate → render |
+| 6 | Container tests | DONE | 0.1.0-s.2 | 13 tests: round-trip, checksums, assets, corruption, edge cases |
+| 7 | DOM serialization tests | DONE | 0.1.0-s.2 | 30 tests: all 18 element variants, types, state machine, full invoice |
+| 8 | Document validator | DONE | 0.1.0-s.2 | 13 error codes (E_001–E_013, F_001–F_005), manifest validation |
+| 9 | PDF renderer (basic) | DONE | 0.1.0-s.2 | Headings, paragraphs, tables, invoices, signatures via lopdf |
+| 10 | Integration test | DONE | 0.1.0-s.2 | Full round-trip: create → validate → render → container → read → validate |
 
 ---
 
