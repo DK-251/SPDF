@@ -1,0 +1,8 @@
+# Cargo configuration for SPDF workspace
+# Windows MSVC: the VS 18 installation only has CRT libs under lib\onecore\x64
+# (lib\x64 is absent). This LIBPATH ensures the linker finds msvcrt.lib etc.
+
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+  "-C", "link-arg=/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.50.35717\\lib\\onecore\\x64",
+]
