@@ -54,8 +54,7 @@ fn generate_spdf(
     let doc: Document =
         serde_json::from_str(semantic_json).map_err(|e| spdf_err(SpdfError::Json(e)))?;
 
-    let pdf_bytes =
-        spdf_renderer::render_to_pdf(&doc).map_err(spdf_err)?;
+    let pdf_bytes = spdf_renderer::render_to_pdf(&doc).map_err(spdf_err)?;
 
     let doc_id = doc.document_id.clone();
     let mut manifest = Manifest::new(
@@ -133,11 +132,7 @@ fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
                         .iter()
                         .enumerate()
                         .map(|(i, cell)| {
-                            let header = lt
-                                .headers
-                                .get(i)
-                                .map(|h| h.as_str())
-                                .unwrap_or("unknown");
+                            let header = lt.headers.get(i).map(|h| h.as_str()).unwrap_or("unknown");
                             json!({ "header": header, "value": cell.value, "type": cell.spdf_type })
                         })
                         .collect();
