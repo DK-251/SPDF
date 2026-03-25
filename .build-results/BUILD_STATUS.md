@@ -1,25 +1,24 @@
-# Build Status
+﻿# Build Status
 
 ## Last Run
 - **Version:** 0.1.0-snapshot.1
-- **Date:** (not yet run)
-- **Commit:** (none)
+- **Date:** 2026-03-25T12:57:50Z
+- **Commit:** efa6f32
 - **Branch:** main
-- **Machine:** (pending ASUS TUF setup)
+- **Machine:** TUF_WARRIOR_DK
 
 ## Rust Core (crates/)
-- [-] cargo build: PENDING
-- [-] cargo test: PENDING
-- [-] cargo clippy: PENDING
-- [-] cargo fmt --check: PENDING
+- [-] cargo build: SKIP
+- [-] cargo test: SKIP
+- [-] cargo clippy: SKIP
+- [-] cargo fmt --check: SKIP
 
 ## Python API (api/)
-- [-] pip install: PENDING
-- [-] pytest: PENDING
+- [-] pip install: SKIP
+- [-] pytest: SKIP
 
 ## Studio Frontend (studio/)
-- [-] npm install: PENDING
-- [-] npm build: PENDING
+- [-] npm install: SKIP
+- [-] npm build: SKIP
 
 ## Error Logs
-(none yet)
