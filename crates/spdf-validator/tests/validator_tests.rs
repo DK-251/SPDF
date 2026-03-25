@@ -1,7 +1,7 @@
 use spdf_core::dom::*;
 use spdf_core::manifest::Manifest;
 use spdf_core::types::*;
-use spdf_validator::{validate_document, validate_manifest, Severity};
+use spdf_validator::{validate_document, validate_manifest};
 
 fn ts() -> Timestamps {
     Timestamps::now()
@@ -171,7 +171,10 @@ fn e008_table_row_cell_mismatch() {
         eid: eid(),
         headers: vec!["A".into(), "B".into()],
         rows: vec![TableRow {
-            cells: vec![TableCell { value: "only one".into(), spdf_type: None }],
+            cells: vec![TableCell {
+                value: "only one".into(),
+                spdf_type: None,
+            }],
         }],
         timestamps: ts(),
     })];
@@ -187,8 +190,16 @@ fn e009_empty_invoice_number() {
         invoice_number: "".to_string(),
         issue_date: "2026-01-01".to_string(),
         due_date: "2026-02-01".to_string(),
-        vendor: PartyInfo { name: "V".into(), address: None, gstin: None },
-        client: PartyInfo { name: "C".into(), address: None, gstin: None },
+        vendor: PartyInfo {
+            name: "V".into(),
+            address: None,
+            gstin: None,
+        },
+        client: PartyInfo {
+            name: "C".into(),
+            address: None,
+            gstin: None,
+        },
         currency: None,
         timestamps: ts(),
     })];

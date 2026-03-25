@@ -42,11 +42,17 @@ impl ValidationReport {
     }
 
     pub fn error_count(&self) -> usize {
-        self.errors.iter().filter(|e| e.severity == Severity::Error).count()
+        self.errors
+            .iter()
+            .filter(|e| e.severity == Severity::Error)
+            .count()
     }
 
     pub fn fatal_count(&self) -> usize {
-        self.errors.iter().filter(|e| e.severity == Severity::Fatal).count()
+        self.errors
+            .iter()
+            .filter(|e| e.severity == Severity::Fatal)
+            .count()
     }
 }
 

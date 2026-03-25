@@ -29,11 +29,21 @@ use spdf_core::types::ElementId;
 use crate::{Severity, ValidationError};
 
 fn fatal(code: &'static str, message: String, path: Option<String>) -> ValidationError {
-    ValidationError { code, severity: Severity::Fatal, message, path }
+    ValidationError {
+        code,
+        severity: Severity::Fatal,
+        message,
+        path,
+    }
 }
 
 fn error(code: &'static str, message: String, path: Option<String>) -> ValidationError {
-    ValidationError { code, severity: Severity::Error, message, path }
+    ValidationError {
+        code,
+        severity: Severity::Error,
+        message,
+        path,
+    }
 }
 
 pub fn run_document_rules(doc: &Document, errors: &mut Vec<ValidationError>) {
@@ -161,8 +171,7 @@ fn check_element(element: &Element, path: &str, errors: &mut Vec<ValidationError
             }
         }
         Element::Table(t) => {
-            let row_slices: Vec<&[TableCell]> =
-                t.rows.iter().map(|r| r.cells.as_slice()).collect();
+            let row_slices: Vec<&[TableCell]> = t.rows.iter().map(|r| r.cells.as_slice()).collect();
             check_table_headers(&t.headers, &row_slices, path, errors);
         }
         Element::InvoiceHeader(ih) => {
@@ -175,8 +184,7 @@ fn check_element(element: &Element, path: &str, errors: &mut Vec<ValidationError
             }
         }
         Element::LineItemTable(lt) => {
-            let row_slices: Vec<&[TableCell]> =
-                lt.rows.iter().map(|r| r.as_slice()).collect();
+            let row_slices: Vec<&[TableCell]> = lt.rows.iter().map(|r| r.as_slice()).collect();
             check_table_headers(&lt.headers, &row_slices, path, errors);
         }
         Element::PaymentTerms(pt) => {
@@ -199,7 +207,7 @@ fn check_element(element: &Element, path: &str, errors: &mut Vec<ValidationError
         }
         Element::FormField(f) => {
             if matches!(f.field_type, FormFieldType::Select) {
-                let has_options = f.options.as_ref().map_or(false, |o| !o.is_empty());
+                let has_options = f.options.as_ref().is_some_and(|o| !o.is_empty());
                 if !has_options {
                     errors.push(error(
                         "E_012",
