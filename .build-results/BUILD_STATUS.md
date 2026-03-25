@@ -1,9 +1,9 @@
 ﻿# Build Status
 
 ## Last Run
-- **Version:** 0.1.0-snapshot.2
-- **Date:** 2026-03-25T14:59:54Z
-- **Commit:** e2d0b50
+- **Version:** 0.1.0-snapshot.6
+- **Date:** 2026-03-25T17:53:18Z
+- **Commit:** 80dd4f4
 - **Branch:** main
 - **Machine:** TUF_WARRIOR_DK
 
@@ -14,154 +14,233 @@
 - [x] cargo fmt --check: PASS
 
 ## Python API (api/)
-- [-] pip install: SKIP
-- [-] pytest: SKIP
+- [x] pip install: PASS
+- [x] pytest: PASS
 
 ## Studio Frontend (studio/)
 - [-] npm install: SKIP
 - [-] npm build: SKIP
 
 ## Error Logs
-### rust-build.log
-```ncargo.exe :    Compiling spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
+### python-install.log
+```n    return func(self, options, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\commands\install.py", line 386, in run
+    requirement_set = resolver.resolve(
+                      ^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\resolver.py", line 76, in resolve
+    collected = self.factory.collect_root_requirements(root_reqs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\factory.py", line 545, in collect_root_requirements
+    reqs = list(
+           ^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\factory.py", line 501, in _make_requirements_from_install_req
+    cand = self._make_base_candidate_from_link(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\factory.py", line 212, in _make_base_candidate_from_link
+    self._editable_candidate_cache[link] = EditableCandidate(
+                                           ^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 329, in __init__
+    super().__init__(
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 159, in __init__
+    self.dist = self._prepare()
+                ^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 236, in _prepare
+    dist = self._prepare_distribution()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\resolution\resolvelib\candidates.py", line 339, in _prepare_distribution
+    return self._factory.preparer.prepare_editable_requirement(self._ireq)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\operations\prepare.py", line 698, in prepare_editable_requirement
+    dist = _get_prepared_distribution(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\operations\prepare.py", line 72, in _get_prepared_distribution
+    abstract_dist.prepare_distribution_metadata(
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\distributions\sdist.py", line 54, in prepare_distribution_metadata
+    self.req.isolated_editable_sanity_check()
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\req\req_install.py", line 541, in isolated_editable_sanity_check
+    and not self.supports_pyproject_editable
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\functools.py", line 998, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_internal\req\req_install.py", line 258, in supports_pyproject_editable
+    return "build_editable" in self.pep517_backend._supported_features()
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_vendor\pyproject_hooks\_impl.py", line 180, in _supported_features
+    return self._call_hook("_supported_features", {})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TOOLS\Lib\site-packages\pip\_vendor\pyproject_hooks\_impl.py", line 402, in _call_hook
+    raise BackendUnavailable(
+pip._vendor.pyproject_hooks._impl.BackendUnavailable: Cannot import 'setuptools.backends._legacy'
+```
+
+### python-test.log
+```npython.exe : D:\TOOLS\python.exe: No module named pytest
 At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
 +         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
 +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (   Compiling sp...es\spdf-python):String) [], RemoteException
+    + CategoryInfo          : NotSpecified: (D:\TOOLS\python...le named pytest:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.99s
+```
+
+### rust-build.log
+```n   Compiling serde_json v1.0.149
+   Compiling lzma-rs v0.3.0
+   Compiling crossbeam-epoch v0.9.18
+   Compiling pbkdf2 v0.12.2
+   Compiling sha1 v0.10.6
+   Compiling aes v0.8.4
+   Compiling zopfli v0.8.3
+   Compiling deflate64 v0.1.12
+   Compiling rayon-core v1.13.0
+   Compiling constant_time_eq v0.3.1
+   Compiling uuid v1.22.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling pyo3-ffi v0.22.6
+   Compiling pyo3-macros-backend v0.22.6
+   Compiling wasm-bindgen v0.2.114
+   Compiling sha2 v0.10.9
+   Compiling memoffset v0.9.1
+   Compiling minimal-lexical v0.2.1
+   Compiling either v1.15.0
+   Compiling heck v0.5.0
+   Compiling pyo3 v0.22.6
+   Compiling md-5 v0.10.6
+   Compiling nom v7.1.3
+   Compiling encoding_rs v0.8.35
+   Compiling rangemap v1.7.1
+   Compiling weezl v0.1.12
+   Compiling rayon v1.11.0
+   Compiling wasm-bindgen-macro-support v0.2.114
+   Compiling bzip2 v0.5.2
+   Compiling indoc v2.0.7
+   Compiling unindent v0.2.4
+   Compiling serde_derive v1.0.228
+   Compiling thiserror-impl v2.0.18
+   Compiling zeroize_derive v1.4.3
+   Compiling displaydoc v0.2.5
+   Compiling zeroize v1.8.2
+   Compiling zstd v0.13.3
+   Compiling wasm-bindgen-macro v0.2.114
+   Compiling pyo3-macros v0.22.6
+   Compiling xz2 v0.1.7
+   Compiling js-sys v0.3.91
+   Compiling chrono v0.4.44
+   Compiling spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+   Compiling lopdf v0.34.0
+   Compiling spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
+   Compiling spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
+   Compiling spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
+   Compiling serde-wasm-bindgen v0.6.5
+   Compiling spdf-wasm v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-wasm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 45.35s
 ```
 
 ### rust-clippy.log
-```ncargo.exe :     Checking spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
-At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
-+         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
-+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (    Checking sp...spdf-validator):String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-error: this `map_or` can be simplified
-   --> crates\spdf-validator\src\rules.rs:202:35
-    |
-202 |                 let has_options = f.options.as_ref().map_or(false, |o| !o.is_empty());
-    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |
-    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#unnecessary_map_or
-    = note: `-D clippy::unnecessary-map-or` implied by `-D warnings`
-    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_map_or)]`
-help: use is_some_and instead
-    |
-202 -                 let has_options = f.options.as_ref().map_or(false, |o| !o.is_empty());
-202 +                 let has_options = f.options.as_ref().is_some_and(|o| !o.is_empty());
-    |
-
-error: could not compile `spdf-validator` (lib) due to 1 previous error
-```
-
-### rust-fmt.log
-```n             }
-         }
-         Element::Table(t) => {
-[31m-            let row_slices: Vec<&[TableCell]> =
-[0m[31m-                t.rows.iter().map(|r| r.cells.as_slice()).collect();
-[0m[32m+            let row_slices: Vec<&[TableCell]> = t.rows.iter().map(|r| r.cells.as_slice()).collect();
-[0m             check_table_headers(&t.headers, &row_slices, path, errors);
-         }
-         Element::InvoiceHeader(ih) => {
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator\src\rules.rs:175:
-             }
-         }
-         Element::LineItemTable(lt) => {
-[31m-            let row_slices: Vec<&[TableCell]> =
-[0m[31m-                lt.rows.iter().map(|r| r.as_slice()).collect();
-[0m[32m+            let row_slices: Vec<&[TableCell]> = lt.rows.iter().map(|r| r.as_slice()).collect();
-[0m             check_table_headers(&lt.headers, &row_slices, path, errors);
-         }
-         Element::PaymentTerms(pt) => {
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator\tests\validator_tests.rs:171:
-         eid: eid(),
-         headers: vec!["A".into(), "B".into()],
-         rows: vec![TableRow {
-[31m-            cells: vec![TableCell { value: "only one".into(), spdf_type: None }],
-[0m[32m+            cells: vec![TableCell {
-[0m[32m+                value: "only one".into(),
-[0m[32m+                spdf_type: None,
-[0m[32m+            }],
-[0m         }],
-         timestamps: ts(),
-     })];
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator\tests\validator_tests.rs:187:
-         invoice_number: "".to_string(),
-         issue_date: "2026-01-01".to_string(),
-         due_date: "2026-02-01".to_string(),
-[31m-        vendor: PartyInfo { name: "V".into(), address: None, gstin: None },
-[0m[31m-        client: PartyInfo { name: "C".into(), address: None, gstin: None },
-[0m[32m+        vendor: PartyInfo {
-[0m[32m+            name: "V".into(),
-[0m[32m+            address: None,
-[0m[32m+            gstin: None,
-[0m[32m+        },
-[0m[32m+        client: PartyInfo {
-[0m[32m+            name: "C".into(),
-[0m[32m+            address: None,
-[0m[32m+            gstin: None,
-[0m[32m+        },
-[0m         currency: None,
-         timestamps: ts(),
-     })];
+```n   Compiling pyo3-macros-backend v0.22.6
+    Checking crossbeam-deque v0.8.6
+    Checking minimal-lexical v0.2.1
+    Checking either v1.15.0
+    Checking hmac v0.12.1
+    Checking sha1 v0.10.6
+    Checking aes v0.8.4
+    Checking pbkdf2 v0.12.2
+    Checking sha2 v0.10.9
+    Checking rayon-core v1.13.0
+    Checking nom v7.1.3
+    Checking md-5 v0.10.6
+   Compiling pyo3 v0.22.6
+    Checking encoding_rs v0.8.35
+    Checking rangemap v1.7.1
+    Checking weezl v0.1.12
+    Checking memoffset v0.9.1
+    Checking rayon v1.11.0
+    Checking uuid v1.22.0
+    Checking serde_json v1.0.149
+    Checking unindent v0.2.4
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling lzma-sys v0.1.20
+    Checking bzip2 v0.5.2
+   Compiling wasm-bindgen-macro-support v0.2.114
+   Compiling zstd-safe v7.2.4
+    Checking zstd v0.13.3
+   Compiling serde_derive v1.0.228
+   Compiling zeroize_derive v1.4.3
+   Compiling thiserror-impl v2.0.18
+   Compiling displaydoc v0.2.5
+    Checking zeroize v1.8.2
+    Checking thiserror v2.0.18
+    Checking xz2 v0.1.7
+   Compiling wasm-bindgen-macro v0.2.114
+    Checking zip v2.4.2
+   Compiling pyo3-macros v0.22.6
+    Checking wasm-bindgen v0.2.114
+    Checking serde v1.0.228
+    Checking chrono v0.4.44
+    Checking js-sys v0.3.91
+    Checking spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+    Checking lopdf v0.34.0
+    Checking spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
+    Checking spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
+    Checking spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
+    Checking serde-wasm-bindgen v0.6.5
+    Checking spdf-wasm v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-wasm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 17.99s
 ```
 
 ### rust-test.log
-```n    + FullyQualifiedErrorId : NativeCommandError
- 
- --> crates\spdf-validator\tests\validator_tests.rs:4:60
-  |
-4 | use spdf_validator::{validate_document, validate_manifest, Severity};
-  |                                                            ^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+```ntest e008_line_item_table_row_cell_mismatch ... ok
+test e007_table_no_headers ... ok
+test e008_table_row_cell_mismatch ... ok
+test e001_empty_title ... ok
+test e009_empty_invoice_number ... ok
+test e010_empty_payment_total ... ok
+test e011_redaction_empty_redacted_eid ... ok
+test e012_select_without_options ... ok
+test e013_empty_variable_name ... ok
+test f001_no_pages ... ok
+test f002_empty_page ... ok
+test f004_empty_layer_checksum ... ok
+test f003_wrong_manifest_format ... ok
+test f005_empty_manifest_hash ... ok
+test report_counts ... ok
+test valid_document_passes ... ok
+test valid_manifest_passes ... ok
 
-warning: `spdf-validator` (test "validator_tests") generated 1 warning (run `cargo fix --test "validator_tests" -p spdf-validator` to apply 1 suggestion)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.71s
-     Running unittests src\lib.rs (target\debug\deps\spdf_core-c9d433ce6c9b1045.exe)
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src\lib.rs (target\debug\deps\spdf_wasm-4988da22b8988948.exe)
 
 running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-     Running tests\container_tests.rs (target\debug\deps\container_tests-0798c7706bb5367a.exe)
+   Doc-tests spdf_core
 
-running 14 tests
-test read_invalid_zip_data ... ok
-test read_zip_missing_manifest ... ok
-test read_zip_missing_layer ... ok
-test document_id_preserved ... ok
-test manifest_hash_is_populated ... ok
-test manifest_format_and_version ... ok
-test write_then_read_round_trip ... ok
-test manifest_checksums_match_layer_content ... ok
-test empty_layers_round_trip ... ok
-test round_trip_with_single_asset ... ok
-test round_trip_with_multiple_assets ... ok
-test corrupted_layer_detected ... ok
-test same_input_produces_same_checksums ... ok
-test large_layer_round_trip ... FAILED
+running 0 tests
 
-failures:
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
----- large_layer_round_trip stdout ----
+   Doc-tests spdf_renderer
 
-thread 'large_layer_round_trip' (12316) panicked at crates\spdf-core\tests\container_tests.rs:247:44:
-called `Result::unwrap()` on an `Err` value: DecompressionBomb { ratio: 461.9044894366197, max: 100.0 }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+running 0 tests
 
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-failures:
-    large_layer_round_trip
+   Doc-tests spdf_validator
 
-test result: FAILED. 13 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+running 0 tests
 
-error: test failed, to rerun pass `-p spdf-core --test container_tests`
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests spdf_wasm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
 ```
 
