@@ -95,6 +95,15 @@ if ($hasPython -and (Test-Path "api")) {
     Write-Host ""
     Write-Host "=== Python ===" -ForegroundColor Cyan
 
+    # Ensure venv exists so maturin develop can install into it
+    $venvDir = ".venv"
+    if (-not (Test-Path $venvDir)) {
+        Write-Host "  Creating virtualenv ..." -ForegroundColor Yellow
+        & python -m venv $venvDir
+    }
+    $env:VIRTUAL_ENV = (Resolve-Path $venvDir).Path
+    $env:Path = (Join-Path $env:VIRTUAL_ENV "Scripts") + ";" + $env:Path
+
     $null = $steps.Add((Run-Step "Python" "pip install api[dev]" "pip install -e api/.[dev] --quiet"))
 
     if ($hasMaturin) {
