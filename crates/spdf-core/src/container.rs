@@ -5,7 +5,7 @@
 
 use std::io::{Cursor, Read, Write};
 
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 use zip::{CompressionMethod, ZipArchive, ZipWriter};
 
 use crate::error::{SpdfError, SpdfResult};
@@ -56,7 +56,7 @@ pub fn write_container(
 
     let mut buf = Vec::new();
     let mut zip = ZipWriter::new(Cursor::new(&mut buf));
-    let options = FileOptions::default().compression_method(CompressionMethod::Deflated);
+    let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
 
     // Manifest must be first entry
     zip.start_file("manifest.json", options)?;
@@ -74,7 +74,7 @@ pub fn write_container(
     zip.write_all(&layers.styles)?;
 
     // Render layer (PDF) — store without compression, already compressed
-    let store_options = FileOptions::default().compression_method(CompressionMethod::Stored);
+    let store_options = SimpleFileOptions::default().compression_method(CompressionMethod::Stored);
     zip.start_file("layers/render.pdf", store_options)?;
     zip.write_all(&layers.render)?;
 
