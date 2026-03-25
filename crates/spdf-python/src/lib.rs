@@ -10,22 +10,24 @@ use serde_json::json;
 use spdf_core::container::{self, ContainerLayers};
 use spdf_core::dom::{Document, Element};
 use spdf_core::manifest::Manifest;
-use spdf_core::types::{DocumentId, GeneratorInfo};
+use spdf_core::types::GeneratorInfo;
 use spdf_core::SpdfError;
 
-fn spdf_err(e: SpdfError) -> PyErr {
-    PyValueError::new_err(e.to_string())
+impl From<SpdfError> for PyErr {
+    fn from(e: SpdfError) -> Self {
+        PyValueError::new_err(e.to_string())
+    }
 }
 
 /// Validate an SPDF container (bytes). Returns ValidationReport as JSON string.
 #[pyfunction]
 fn validate_spdf(spdf_bytes: &[u8]) -> PyResult<String> {
-    let extracted = container::read_container(spdf_bytes).map_err(spdf_err)?;
+    let extracted = container::read_container(spdf_bytes)?;
 
     let manifest_report = spdf_validator::validate_manifest(&extracted.manifest);
 
     let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| spdf_err(SpdfError::Json(e)))?;
+        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
     let document_report = spdf_validator::validate_document(&doc);
 
     let combined = json!({
@@ -36,7 +38,8 @@ fn validate_spdf(spdf_bytes: &[u8]) -> PyResult<String> {
         "fatal_count": manifest_report.fatal_count() + document_report.fatal_count(),
     });
 
-    serde_json::to_string(&combined).map_err(|e| spdf_err(SpdfError::Json(e)))
+    let json = serde_json::to_string(&combined).map_err(SpdfError::from)?;
+    Ok(json)
 }
 
 /// Build a complete SPDF container from layer JSON strings. Returns raw .spdf bytes.
@@ -51,10 +54,9 @@ fn generate_spdf(
     audit_json: &str,
 ) -> PyResult<Vec<u8>> {
     let doc: Document =
-        serde_json::from_str(semantic_json).map_err(|e| spdf_err(SpdfError::Json(e)))?;
+        serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
 
-    let pdf_bytes =
-        spdf_renderer::render_to_pdf(&doc).map_err(spdf_err)?;
+    let pdf_bytes = spdf_renderer::render_to_pdf(&doc)?;
 
     let doc_id = doc.document_id.clone();
     let mut manifest = Manifest::new(
@@ -74,27 +76,28 @@ fn generate_spdf(
         audit: audit_json.as_bytes().to_vec(),
     };
 
-    container::write_container(&mut manifest, &layers, &[]).map_err(spdf_err)
+    Ok(container::write_container(&mut manifest, &layers, &[])?)
 }
 
 /// Read an SPDF container and render its semantic layer to PDF bytes.
 #[pyfunction]
 fn render_to_pdf(spdf_bytes: &[u8]) -> PyResult<Vec<u8>> {
-    let extracted = container::read_container(spdf_bytes).map_err(spdf_err)?;
+    let extracted = container::read_container(spdf_bytes)?;
 
     let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| spdf_err(SpdfError::Json(e)))?;
+        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
 
-    spdf_renderer::render_to_pdf(&doc).map_err(spdf_err)
+    Ok(spdf_renderer::render_to_pdf(&doc)?)
 }
 
 /// Parse a semantic JSON string, validate its structure, and return the Document as JSON.
 #[pyfunction]
 fn parse_semantic(semantic_json: &str) -> PyResult<String> {
     let doc: Document =
-        serde_json::from_str(semantic_json).map_err(|e| spdf_err(SpdfError::Json(e)))?;
+        serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
 
-    serde_json::to_string_pretty(&doc).map_err(|e| spdf_err(SpdfError::Json(e)))
+    let json = serde_json::to_string_pretty(&doc).map_err(SpdfError::from)?;
+    Ok(json)
 }
 
 /// Extract structured invoice data from an SPDF container.
@@ -103,10 +106,10 @@ fn parse_semantic(semantic_json: &str) -> PyResult<String> {
 /// a structured JSON dict with invoice fields.
 #[pyfunction]
 fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
-    let extracted = container::read_container(spdf_bytes).map_err(spdf_err)?;
+    let extracted = container::read_container(spdf_bytes)?;
 
     let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| spdf_err(SpdfError::Json(e)))?;
+        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
 
     let mut invoice_header = None;
     let mut line_item_table = None;
@@ -170,7 +173,8 @@ fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
         "payment_method": payment_terms.and_then(|p| p.payment_method.as_ref()),
     });
 
-    serde_json::to_string(&result).map_err(|e| spdf_err(SpdfError::Json(e)))
+    let json = serde_json::to_string(&result).map_err(SpdfError::from)?;
+    Ok(json)
 }
 
 #[pyfunction]

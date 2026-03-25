@@ -161,7 +161,11 @@ fn validate_spdf_valid_invoice() {
     let parsed: Document = serde_json::from_slice(&extracted.semantic).unwrap();
     let doc_report = validate_document(&parsed);
 
-    assert!(manifest_report.is_valid(), "manifest: {:?}", manifest_report.errors);
+    assert!(
+        manifest_report.is_valid(),
+        "manifest: {:?}",
+        manifest_report.errors
+    );
     assert!(doc_report.is_valid(), "document: {:?}", doc_report.errors);
 }
 
@@ -279,10 +283,13 @@ fn generate_spdf_preserves_financial_values() {
         audit: b"{}".to_vec(),
     };
 
-    let mut manifest = Manifest::new(parsed.document_id.clone(), GeneratorInfo {
-        name: "test".to_string(),
-        version: "0.1.0".to_string(),
-    });
+    let mut manifest = Manifest::new(
+        parsed.document_id.clone(),
+        GeneratorInfo {
+            name: "test".to_string(),
+            version: "0.1.0".to_string(),
+        },
+    );
 
     let container_bytes = container::write_container(&mut manifest, &layers, &[]).unwrap();
     let extracted = container::read_container(&container_bytes).unwrap();
@@ -703,22 +710,34 @@ fn regression_validator_catches_all_error_codes() {
     // E_001: empty title
     let mut doc = sample_invoice_doc();
     doc.title = "".into();
-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_001"));
+    assert!(validate_document(&doc)
+        .errors
+        .iter()
+        .any(|e| e.code == "E_001"));
 
     // E_002: empty locale
     let mut doc = sample_invoice_doc();
     doc.locale = "".into();
-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_002"));
+    assert!(validate_document(&doc)
+        .errors
+        .iter()
+        .any(|e| e.code == "E_002"));
 
     // F_001: no pages
     let mut doc = sample_invoice_doc();
     doc.pages.clear();
-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "F_001"));
+    assert!(validate_document(&doc)
+        .errors
+        .iter()
+        .any(|e| e.code == "F_001"));
 
     // F_002: empty page
     let mut doc = sample_invoice_doc();
     doc.pages[0].elements.clear();
-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "F_002"));
+    assert!(validate_document(&doc)
+        .errors
+        .iter()
+        .any(|e| e.code == "F_002"));
 
     // E_006: heading level 0
     let mut doc = sample_invoice_doc();
@@ -731,7 +750,10 @@ fn regression_validator_catches_all_error_codes() {
         color: None,
         timestamps: ts(),
     })];
-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_006"));
+    assert!(validate_document(&doc)
+        .errors
+        .iter()
+        .any(|e| e.code == "E_006"));
 }
 
 #[test]
