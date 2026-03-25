@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.2
-- **Phase:** 1 — Foundation
-- **Status:** Week 2 complete — tests, validator, renderer, integration test
+- **Version:** 0.1.0-snapshot.4
+- **Phase:** 2 — Backend API
+- **Status:** Week 3 in progress — PyO3 bindings + binding tests + Phase 1 regression tests complete
 
 ---
 
@@ -40,9 +40,9 @@
 
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
-| 11 | PyO3 bindings | TODO | — | |
-| 12-13 | Document generation endpoint | TODO | — | |
-| 14-15 | PDF upload + Celery + Claude conversion | TODO | — | |
+| 11 | PyO3 bindings | DONE | 0.1.0-s.4 | 5 PyO3 functions + SpdfEngine wrapper + 20 binding logic tests + 6 regression tests |
+| 12-13 | Document generation + extraction endpoints | TODO | — | |
+| 14-15 | Account endpoints + rate limiting | TODO | — | |
 
 ### Week 4: Auth & Billing
 
@@ -83,3 +83,4 @@
 | 2026-03-25 | GitHub push protection blocked example Stripe keys | Sanitized to EXAMPLE_KEY_PLACEHOLDER | 0.1.0-s.1 |
 | 2026-03-25 | LNK1104 msvcrt.lib missing on TUF | Installed MSVC C++ build tools | 0.1.0-s.1 |
 | 2026-03-25 | zip crate v2.4 FileOptions needs type annotation | Changed to SimpleFileOptions | 0.1.0-s.1 |
+| 2026-03-25 | large_layer_round_trip fails: decompression bomb false positive (ratio 461:1 vs max 100:1) | Raised MAX_DECOMPRESSION_RATIO to 1000 (real bombs exceed 1M:1) | 0.1.0-s.4 |

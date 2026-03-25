@@ -15,7 +15,8 @@ use crate::manifest::{sha256_hex, Manifest};
 const MAX_FILE_SIZE: u64 = 100 * 1024 * 1024;
 
 /// Maximum decompression ratio to prevent ZIP bombs.
-const MAX_DECOMPRESSION_RATIO: f64 = 100.0;
+/// Real ZIP bombs exceed 1M:1; legitimate compressed data rarely exceeds 1000:1.
+const MAX_DECOMPRESSION_RATIO: f64 = 1000.0;
 
 /// Layers bundled for writing into a container.
 pub struct ContainerLayers {

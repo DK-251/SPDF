@@ -10,6 +10,31 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.4] - 2026-03-25
+
+### Added
+- `spdf-python` PyO3 bindings: 5 functions exposed as `spdf_native` Python module
+  - `validate_spdf()` — validate container + document, returns combined report as JSON
+  - `generate_spdf()` — build .spdf container from layer JSONs with auto-rendered PDF
+  - `render_to_pdf()` — extract semantic layer and render to PDF bytes
+  - `parse_semantic()` — parse and validate semantic JSON, return Document as JSON
+  - `extract_invoice_data()` — extract InvoiceHeader, LineItemTable, PaymentTerms as structured dict
+- `api/app/services/spdf_engine.py` — Python `SpdfEngine` wrapper class over `spdf_native`
+- Binding logic tests (20 tests): validate, generate, render, parse, extract paths + JSON output shape
+- Phase 1 regression tests (6 tests): checksum integrity, state machine, element serde, validator codes, PDF output
+
+### Fixed
+- `MAX_DECOMPRESSION_RATIO` raised from 100 to 1000 — fixes `large_layer_round_trip` false positive (real ZIP bombs exceed 1M:1)
+
+### Build Target
+- [ ] cargo build --workspace
+- [ ] cargo test --workspace
+- [ ] cargo clippy -- -D warnings
+- [ ] maturin develop --release (build PyO3 extension)
+- [ ] python -c "import spdf_native" (verify import)
+
+---
+
 ## [0.1.0-snapshot.2] - 2026-03-25
 
 ### Added

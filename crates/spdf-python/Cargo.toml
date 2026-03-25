@@ -8,7 +8,7 @@ license.workspace = true
 authors.workspace = true
 
 [lib]
-name = "spdf_python"
+name = "spdf_native"
 crate-type = ["cdylib"]
 
 [dependencies]
