@@ -28,44 +28,41 @@ $branch  = & git branch --show-current 2>$null; if (-not $branch) { $branch = "u
 $date    = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $machine = $env:COMPUTERNAME
 
-$steps = @(
-    @{ Name = "cargo fmt --check"; Log = "check-fmt.log";    Cmd = @("cargo", "fmt", "--all", "--", "--check") },
-    @{ Name = "cargo clippy";      Log = "check-clippy.log"; Cmd = @("cargo", "clippy", "--workspace", "--", "-D", "warnings") },
-    @{ Name = "cargo test";        Log = "check-test.log";   Cmd = @("cargo", "test", "--workspace") }
+# Define steps as parallel arrays (avoids hashtable issues in PS)
+$stepNames = @("cargo fmt --check", "cargo clippy", "cargo test")
+$stepLogs  = @("check-fmt.log", "check-clippy.log", "check-test.log")
+$stepCmds  = @(
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace -- -D warnings",
+    "cargo test --workspace"
 )
 
-$results = @{}
+$resultStatus = @("", "", "")
 $allPass = $true
 
-foreach ($step in $steps) {
-    $logPath = "$resultsDir\$($step.Log)"
-    Write-Host "Running: $($step.Name) ..." -NoNewline
-    $LASTEXITCODE = 0
+for ($i = 0; $i -lt $stepNames.Length; $i++) {
+    $name    = $stepNames[$i]
+    $logFile = $stepLogs[$i]
+    $cmd     = $stepCmds[$i]
+    $logPath = "$resultsDir\$logFile"
 
-    try {
-        & $step.Cmd[0] $step.Cmd[1..($step.Cmd.Length - 1)] *> $logPath
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host " PASS" -ForegroundColor Green
-            $results[$step.Name] = "PASS"
-        } else {
-            Write-Host " FAIL (exit $LASTEXITCODE)" -ForegroundColor Red
-            $results[$step.Name] = "FAIL"
-            $allPass = $false
-        }
-    } catch {
-        $_.Exception.Message | Out-File -FilePath $logPath -Encoding utf8
-        Write-Host " FAIL (exception)" -ForegroundColor Red
-        $results[$step.Name] = "FAIL"
+    Write-Host "Running: $name ..." -NoNewline
+
+    # Use Invoke-Expression with redirection to capture all output
+    Invoke-Expression "$cmd *> `"$logPath`" 2>&1"
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host " PASS" -ForegroundColor Green
+        $resultStatus[$i] = "PASS"
+    } else {
+        Write-Host " FAIL (exit $LASTEXITCODE)" -ForegroundColor Red
+        $resultStatus[$i] = "FAIL"
         $allPass = $false
     }
 }
 
 # Build the report
-function Icon($status) {
-    if ($status -eq "PASS") { return "[x]" } else { return "[ ]" }
-}
-
-$overallIcon = if ($allPass) { "PASS" } else { "FAIL" }
+$overallStatus = if ($allPass) { "PASS" } else { "FAIL" }
 
 $report = @"
 # Check Results
@@ -76,31 +73,30 @@ $report = @"
 - **Branch:** $branch
 - **Date:** $date
 - **Machine:** $machine
-- **Overall:** $overallIcon
+- **Overall:** $overallStatus
 
 ## Steps
 "@
 
-foreach ($step in $steps) {
-    $s = $results[$step.Name]
-    $report += "`n- $(Icon $s) $($step.Name): $s"
+for ($i = 0; $i -lt $stepNames.Length; $i++) {
+    $s = $resultStatus[$i]
+    $icon = if ($s -eq "PASS") { "[x]" } else { "[ ]" }
+    $report += "`n- $icon $($stepNames[$i]): $s"
 }
 
-# Append full logs for any failures
+# Append full logs for failures
 $hasFailure = $false
-foreach ($step in $steps) {
-    if ($results[$step.Name] -eq "FAIL") {
+for ($i = 0; $i -lt $stepNames.Length; $i++) {
+    if ($resultStatus[$i] -eq "FAIL") {
         $hasFailure = $true
-        $logPath = "$resultsDir\$($step.Log)"
-        $logContent = Get-Content $logPath -Raw -ErrorAction SilentlyContinue
-        if ($logContent) {
+        $logPath = "$resultsDir\$($stepLogs[$i])"
+        if (Test-Path $logPath) {
             $tail = (Get-Content $logPath -Tail 80) -join "`n"
-            $report += "`n`n### $($step.Name) (last 80 lines)`n``````n$tail`n```````n"
+            $report += "`n`n### $($stepNames[$i]) (last 80 lines)`n`````````n$tail`n``````````n"
         }
     }
 }
 
-# If all passed, note it
 if (-not $hasFailure) {
     $report += "`n`nAll checks passed. No error logs to show."
 }
@@ -112,7 +108,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 if ($allPass) {
     Write-Host "  ALL CHECKS PASSED" -ForegroundColor Green
 } else {
-    Write-Host "  SOME CHECKS FAILED — see $reportFile" -ForegroundColor Red
+    Write-Host "  SOME CHECKS FAILED - see $reportFile" -ForegroundColor Red
 }
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
