@@ -6,7 +6,7 @@
 ## Current State
 - **Version:** 0.1.0-snapshot.6
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 in progress — unified `just check` (Rust + Python), 30 API tests, all edge cases covered
+- **Status:** Week 3 in progress — all checks green (93 Rust + 32 Python tests), `just check` fully operational
 
 ---
 
@@ -42,7 +42,7 @@
 |-----|------|--------|----------|-------|
 | 11 | PyO3 bindings | DONE | 0.1.0-s.4 | 5 PyO3 functions + SpdfEngine wrapper + 20 binding logic tests + 6 regression tests |
 | 12-13 | Document generation + extraction endpoints | DONE | 0.1.0-s.5 | FastAPI app, 6 endpoints, Pydantic schemas, error handling |
-| 12-13 | Test wiring + edge cases + unified check | DONE | 0.1.0-s.6 | 30 API tests, 3 new validator tests, unified `just check` script |
+| 12-13 | Test wiring + edge cases + unified check | DONE | 0.1.0-s.6 | 32 API tests, 3 new validator tests, unified `just check` (all green on TUF) |
 | 14-15 | Account endpoints + rate limiting | TODO | — | |
 
 ### Week 4: Auth & Billing
@@ -87,3 +87,6 @@
 | 2026-03-25 | large_layer_round_trip fails: decompression bomb false positive (ratio 461:1 vs max 100:1) | Raised MAX_DECOMPRESSION_RATIO to 1000 (real bombs exceed 1M:1) | 0.1.0-s.4 |
 | 2026-03-25 | clippy: unused DocumentId import + pyo3 useless_conversion lint | Removed import, added crate-level #![allow] for pyo3 macro issue | 0.1.0-s.4 |
 | 2026-03-25 | rustfmt: binding_logic_tests.rs + lib.rs formatting mismatches | Matched exact rustfmt output for all flagged lines | 0.1.0-s.4 |
+| 2026-03-25 | check.ps1: PS backtick escapes, broken `*>` redirection, array flattening | Rewrote with `[char]96`, `Out-String` capture, `ArrayList` collections | 0.1.0-s.6 |
+| 2026-03-25 | pyproject.toml: `setuptools.backends._legacy` unavailable on TUF | Changed build-backend to `setuptools.build_meta` | 0.1.0-s.6 |
+| 2026-03-25 | maturin develop: no virtualenv found on TUF global Python | check.ps1 now creates `.venv` and sets `VIRTUAL_ENV` before Python steps | 0.1.0-s.6 |

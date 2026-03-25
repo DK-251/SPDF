@@ -19,12 +19,18 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 - 3 new Rust validator tests: E_011 (redaction empty eid), LineItemTable E_007/E_008 coverage
 - `sample_non_invoice_semantic` fixture for testing extract on plain documents
 
+### Fixed
+- Rewrote `check.ps1` for PowerShell compatibility: `[char]96` for markdown backticks, `Out-String` for stderr capture, `ArrayList` for step collection, null guards on `$LASTEXITCODE`
+- Changed `api/pyproject.toml` build-backend from `setuptools.backends._legacy:_Backend` to `setuptools.build_meta` (legacy backend unavailable on TUF)
+- `check.ps1` now creates `.venv` and sets `VIRTUAL_ENV` before Python steps (maturin develop requires a virtualenv)
+- Deleted obsolete `scripts/check-log.ps1`
+
 ### Changed
 - `just check` now runs full CI (Rust + Python) instead of Rust-only bare commands
 - Removed separate `.log` files — all output captured inline in CHECK_RESULTS.md
 
 ### Build Target
-- [ ] just check (produces .build-results/CHECK_RESULTS.md)
+- [x] just check — ALL PASS (93 Rust + 32 Python tests)
 
 ---
 
@@ -46,8 +52,8 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 - Upload size enforcement (100 MB limit) and ZIP magic byte validation
 
 ### Build Target
-- [ ] pip install -e ".[dev]" + maturin develop
-- [ ] pytest tests/ -v
+- [x] pip install -e ".[dev]" + maturin develop
+- [x] pytest tests/ -v
 - [ ] uvicorn app.main:app --port 8000
 
 ---
