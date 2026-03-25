@@ -1,25 +1,28 @@
 # SPDF Project Task Runner
 # Usage: just <recipe>
 
+# Use PowerShell on Windows
+set shell := ["powershell", "-NoProfile", "-Command"]
+
 # Default recipe: show available commands
 default:
     @just --list
 
 # Show current version
 version:
-    @cat VERSION
+    @Get-Content VERSION
 
 # Bump snapshot version (run before each push from Enterprise Desktop)
 bump:
-    bash scripts/bump-version.sh
+    powershell -File scripts/bump-version.ps1
 
 # Bump minor version (new feature added)
 bump-minor:
-    bash scripts/bump-version.sh minor
+    powershell -File scripts/bump-version.ps1 minor
 
 # Bump patch version (bug fix)
 bump-patch:
-    bash scripts/bump-version.sh patch
+    powershell -File scripts/bump-version.ps1 patch
 
 # --- Rust ---
 
@@ -54,33 +57,33 @@ check: fmt-check lint test
 
 # Install Python dependencies
 api-install:
-    cd api && pip install -e ".[dev]"
+    cd api; pip install -e ".[dev]"
 
 # Run API server (dev)
 api-dev:
-    cd api && uvicorn app.main:app --reload --port 8000
+    cd api; uvicorn app.main:app --reload --port 8000
 
 # Run Python tests
 api-test:
-    cd api && pytest tests/ -v
+    cd api; pytest tests/ -v
 
 # --- Studio Frontend ---
 
 # Install frontend dependencies
 studio-install:
-    cd studio && npm install
+    cd studio; npm install
 
 # Run Studio dev server
 studio-dev:
-    cd studio && npm run dev
+    cd studio; npm run dev
 
 # Build Studio for production
 studio-build:
-    cd studio && npm run build
+    cd studio; npm run build
 
 # Run frontend tests
 studio-test:
-    cd studio && npm test
+    cd studio; npm test
 
 # --- Cross-cutting ---
 
@@ -89,4 +92,8 @@ test-all: test api-test studio-test
 
 # Generate build status report (run on ASUS TUF after build)
 status:
-    bash scripts/build-status.sh
+    powershell -ExecutionPolicy Bypass -File scripts/build-status.ps1
+
+# Run environment setup/validation
+setup:
+    powershell -ExecutionPolicy Bypass -File scripts/setup-asus.ps1
