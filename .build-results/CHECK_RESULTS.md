@@ -2,164 +2,134 @@
 
 ## Run Info
 - **Version:** 0.1.0-snapshot.4
-- **Commit:** 6cf531b
+- **Commit:** e951ff4
 - **Branch:** main
-- **Date:** 2026-03-25T16:23:05Z
+- **Date:** 2026-03-25T16:34:23Z
 - **Machine:** TUF_WARRIOR_DK
 - **Overall:** FAIL
 
 ## Steps
 - [ ] cargo fmt --check: FAIL
 - [ ] cargo clippy: FAIL
-- [x] cargo test: PASS
+- [ ] cargo test: FAIL
 
 ### cargo fmt --check (last 80 lines)
 ````
-[0m[32m+    assert!(
-[0m[32m+        manifest_report.is_valid(),
-[0m[32m+        "manifest: {:?}",
-[0m[32m+        manifest_report.errors
-[0m[32m+    );
-[0m     assert!(doc_report.is_valid(), "document: {:?}", doc_report.errors);
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:26:
+ 
+     let manifest_report = spdf_validator::validate_manifest(&extracted.manifest);
+ 
+[31m-    let doc: Document =
+[0m[31m-        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
+[0m[32m+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
+[0m     let document_report = spdf_validator::validate_document(&doc);
+ 
+     let combined = json!({
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:53:
+     metadata_json: &str,
+     audit_json: &str,
+ ) -> PyResult<Vec<u8>> {
+[31m-    let doc: Document =
+[0m[31m-        serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
+[0m[32m+    let doc: Document = serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
+[0m 
+     let pdf_bytes = spdf_renderer::render_to_pdf(&doc)?;
+ 
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:84:
+ fn render_to_pdf(spdf_bytes: &[u8]) -> PyResult<Vec<u8>> {
+     let extracted = container::read_container(spdf_bytes)?;
+ 
+[31m-    let doc: Document =
+[0m[31m-        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
+[0m[32m+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
+[0m 
+     Ok(spdf_renderer::render_to_pdf(&doc)?)
  }
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:93:
+ /// Parse a semantic JSON string, validate its structure, and return the Document as JSON.
+ #[pyfunction]
+ fn parse_semantic(semantic_json: &str) -> PyResult<String> {
+[31m-    let doc: Document =
+[0m[31m-        serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
+[0m[32m+    let doc: Document = serde_json::from_str(semantic_json).map_err(SpdfError::from)?;
+[0m 
+     let json = serde_json::to_string_pretty(&doc).map_err(SpdfError::from)?;
+     Ok(json)
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:108:
+ fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
+     let extracted = container::read_container(spdf_bytes)?;
  
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:279:
-         audit: b"{}".to_vec(),
-     };
- 
-[31m-    let mut manifest = Manifest::new(parsed.document_id.clone(), GeneratorInfo {
-[0m[31m-        name: "test".to_string(),
-[0m[31m-        version: "0.1.0".to_string(),
-[0m[31m-    });
-[0m[32m+    let mut manifest = Manifest::new(
-[0m[32m+        parsed.document_id.clone(),
-[0m[32m+        GeneratorInfo {
-[0m[32m+            name: "test".to_string(),
-[0m[32m+            version: "0.1.0".to_string(),
-[0m[32m+        },
-[0m[32m+    );
+[31m-    let doc: Document =
+[0m[31m-        serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
+[0m[32m+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(SpdfError::from)?;
 [0m 
-     let container_bytes = container::write_container(&mut manifest, &layers, &[]).unwrap();
-     let extracted = container::read_container(&container_bytes).unwrap();
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:703:
-     // E_001: empty title
-     let mut doc = sample_invoice_doc();
-     doc.title = "".into();
-[31m-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_001"));
-[0m[32m+    assert!(validate_document(&doc)
-[0m[32m+        .errors
-[0m[32m+        .iter()
-[0m[32m+        .any(|e| e.code == "E_001"));
-[0m 
-     // E_002: empty locale
-     let mut doc = sample_invoice_doc();
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:710:
-     doc.locale = "".into();
-[31m-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_002"));
-[0m[32m+    assert!(validate_document(&doc)
-[0m[32m+        .errors
-[0m[32m+        .iter()
-[0m[32m+        .any(|e| e.code == "E_002"));
-[0m 
-     // F_001: no pages
-     let mut doc = sample_invoice_doc();
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:715:
-     doc.pages.clear();
-[31m-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "F_001"));
-[0m[32m+    assert!(validate_document(&doc)
-[0m[32m+        .errors
-[0m[32m+        .iter()
-[0m[32m+        .any(|e| e.code == "F_001"));
-[0m 
-     // F_002: empty page
-     let mut doc = sample_invoice_doc();
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:720:
-     doc.pages[0].elements.clear();
-[31m-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "F_002"));
-[0m[32m+    assert!(validate_document(&doc)
-[0m[32m+        .errors
-[0m[32m+        .iter()
-[0m[32m+        .any(|e| e.code == "F_002"));
-[0m 
-     // E_006: heading level 0
-     let mut doc = sample_invoice_doc();
-Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer\tests\binding_logic_tests.rs:731:
-         color: None,
-         timestamps: ts(),
-     })];
-[31m-    assert!(validate_document(&doc).errors.iter().any(|e| e.code == "E_006"));
-[0m[32m+    assert!(validate_document(&doc)
-[0m[32m+        .errors
-[0m[32m+        .iter()
-[0m[32m+        .any(|e| e.code == "E_006"));
-[0m }
- 
- #[test]
+     let mut invoice_header = None;
+     let mut line_item_table = None;
+Diff in \\?\D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python\src\lib.rs:135:
+                         .iter()
+                         .enumerate()
+                         .map(|(i, cell)| {
+[31m-                            let header = lt
+[0m[31m-                                .headers
+[0m[31m-                                .get(i)
+[0m[31m-                                .map(|h| h.as_str())
+[0m[31m-                                .unwrap_or("unknown");
+[0m[32m+                            let header = lt.headers.get(i).map(|h| h.as_str()).unwrap_or("unknown");
+[0m                             json!({ "header": header, "value": cell.value, "type": cell.spdf_type })
+                         })
+                         .collect();
 `````n
 
 ### cargo clippy (last 80 lines)
 ````
-cargo :     Checking spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+cargo :     Checking spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
 At line:1 char:1
 + cargo clippy --workspace -- -D warnings *> ".build-results\check-clip ...
 + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (    Checking sp...ates\spdf-core):String) [], RemoteException
+    + CategoryInfo          : NotSpecified: (    Checking sp...es\spdf-python):String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-    Checking spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
-    Checking spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
-    Checking spdf-wasm v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-wasm)
-    Checking spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
-error: unused import: `DocumentId`
-  --> crates\spdf-python\src\lib.rs:13:24
+error[E0117]: only traits defined in the current crate can be implemented for types defined outside of the crate
+  --> crates\spdf-python\src\lib.rs:16:1
    |
-13 | use spdf_core::types::{DocumentId, GeneratorInfo};
-   |                        ^^^^^^^^^^
+16 | impl From<SpdfError> for PyErr {
+   | ^^^^^---------------^^^^^-----
+   |      |                   |
+   |      |                   `pyo3::PyErr` is not defined in the current crate
+   |      `spdf_core::SpdfError` is not defined in the current crate
    |
-   = note: `-D unused-imports` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(unused_imports)]`
+   = note: impl doesn't have any local type before any uncovered type parameters
+   = note: for more information see https://doc.rust-lang.org/reference/items/implementations.html#orphan-rules
+   = note: define and implement a trait or new type instead
 
-error: useless conversion to the same type: `pyo3::PyErr`
-  --> crates\spdf-python\src\lib.rs:22:48
-   |
-22 | fn validate_spdf(spdf_bytes: &[u8]) -> PyResult<String> {
-   |                                                ^ help: consider removing
-   |
-   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#useless_conversion
-   = note: `-D clippy::useless-conversion` implied by `-D warnings`
-   = help: to override `-D warnings` add `#[allow(clippy::useless_conversion)]`
+For more information about this error, try `rustc --explain E0117`.
+error: could not compile `spdf-python` (lib) due to 1 previous error
+`````n
 
-error: useless conversion to the same type: `pyo3::PyErr`
-  --> crates\spdf-python\src\lib.rs:52:14
+### cargo test (last 80 lines)
+````
+cargo :    Compiling spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
+At line:1 char:1
++ cargo test --workspace *> ".build-results\check-test.log" 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling sp...\spdf-renderer):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   Compiling spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
+error[E0117]: only traits defined in the current crate can be implemented for types defined outside of the crate
+  --> crates\spdf-python\src\lib.rs:16:1
    |
-52 | ) -> PyResult<Vec<u8>> {
-   |              ^ help: consider removing
+16 | impl From<SpdfError> for PyErr {
+   | ^^^^^---------------^^^^^-----
+   |      |                   |
+   |      |                   `pyo3::PyErr` is not defined in the current crate
+   |      `SpdfError` is not defined in the current crate
    |
-   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#useless_conversion
+   = note: impl doesn't have any local type before any uncovered type parameters
+   = note: for more information see https://doc.rust-lang.org/reference/items/implementations.html#orphan-rules
+   = note: define and implement a trait or new type instead
 
-error: useless conversion to the same type: `pyo3::PyErr`
-  --> crates\spdf-python\src\lib.rs:82:48
-   |
-82 | fn render_to_pdf(spdf_bytes: &[u8]) -> PyResult<Vec<u8>> {
-   |                                                ^ help: consider removing
-   |
-   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#useless_conversion
-
-error: useless conversion to the same type: `pyo3::PyErr`
-  --> crates\spdf-python\src\lib.rs:93:51
-   |
-93 | fn parse_semantic(semantic_json: &str) -> PyResult<String> {
-   |                                                   ^ help: consider removing
-   |
-   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#useless_conversion
-
-error: useless conversion to the same type: `pyo3::PyErr`
-   --> crates\spdf-python\src\lib.rs:105:55
-    |
-105 | fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
-    |                                                       ^ help: consider removing
-    |
-    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#useless_conversion
-
-error: could not compile `spdf-python` (lib) due to 6 previous errors
+For more information about this error, try `rustc --explain E0117`.
+error: could not compile `spdf-python` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
 `````n
