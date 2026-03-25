@@ -32,6 +32,12 @@ SPDF/
 └── CLAUDE.md                # This file
 ```
 
+## Development Tracking
+- **PROGRESS.md** — What's done, in progress, and next. Maps to Dev Plan. **Read this first in every session.**
+- **CHANGELOG.md** — What changed per snapshot version.
+- **VERSION** — Current snapshot number. Bump before every push.
+- **.build-results/BUILD_STATUS.md** — Latest build/test results from ASUS TUF.
+
 ## Two-Machine Workflow
 - **Enterprise Desktop:** Code authoring via Claude Code. Push to GHE.
 - **ASUS TUF Laptop:** Pull, build, test. Push results via `just status`.
