@@ -2,35 +2,38 @@
 # Usage: just check  (run on ASUS TUF after pull)
 #
 # Produces:
-#   .build-results/CHECK_RESULTS.md — structured pass/fail with inline errors
+#   .build-results/CHECK_RESULTS.md -- structured pass/fail with inline errors
 #
 # After running:
 #   git add .build-results && git commit -m "check: <version>" && git push
 
 $ErrorActionPreference = "Continue"
 
+# Backtick character for markdown output (avoids PS escape conflicts)
+$bt = [char]96
+
 # Refresh PATH
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-$cargoBin = "$env:USERPROFILE\.cargo\bin"
+$cargoBin = Join-Path $env:USERPROFILE ".cargo\bin"
 if (Test-Path $cargoBin) { $env:Path += ";$cargoBin" }
 
 $resultsDir = ".build-results"
-$reportFile = "$resultsDir\CHECK_RESULTS.md"
+$reportFile = Join-Path $resultsDir "CHECK_RESULTS.md"
 
 if (-not (Test-Path $resultsDir)) { New-Item -ItemType Directory -Path $resultsDir | Out-Null }
 
 # Clean old logs
-Get-ChildItem "$resultsDir\*.log" -ErrorAction SilentlyContinue | Remove-Item -Force
+Get-ChildItem (Join-Path $resultsDir "*.log") -ErrorAction SilentlyContinue | Remove-Item -Force
 
 $version = if (Test-Path "VERSION") { (Get-Content "VERSION" -Raw).Trim() } else { "unknown" }
-$commit  = & git rev-parse --short HEAD 2>$null; if (-not $commit) { $commit = "unknown" }
-$branch  = & git branch --show-current 2>$null; if (-not $branch) { $branch = "unknown" }
-$date    = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$commit = & git rev-parse --short HEAD 2>$null; if (-not $commit) { $commit = "unknown" }
+$branch = & git branch --show-current 2>$null; if (-not $branch) { $branch = "unknown" }
+$date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $machine = $env:COMPUTERNAME
 
 # --- Step runner ---
 
-$steps = @()
+$steps = [System.Collections.ArrayList]::new()
 
 function Run-Step {
     param([string]$Section, [string]$Name, [string]$Cmd)
@@ -38,16 +41,22 @@ function Run-Step {
     Write-Host "  [$Section] $Name ..." -NoNewline
 
     $tempOut = [System.IO.Path]::GetTempFileName()
+    $exitCode = 0
 
     try {
-        Invoke-Expression "$Cmd *> `"$tempOut`" 2>&1"
+        Invoke-Expression $Cmd 2>&1 | Out-File -FilePath $tempOut -Encoding utf8
         $exitCode = $LASTEXITCODE
+        if ($null -eq $exitCode) { $exitCode = 0 }
     } catch {
         $_.Exception.Message | Out-File -FilePath $tempOut -Encoding utf8 -Append
         $exitCode = 1
     }
 
-    $output = if (Test-Path $tempOut) { Get-Content $tempOut -Raw -ErrorAction SilentlyContinue } else { "" }
+    $output = ""
+    if (Test-Path $tempOut) {
+        $output = Get-Content $tempOut -Raw -ErrorAction SilentlyContinue
+        if ($null -eq $output) { $output = "" }
+    }
     Remove-Item $tempOut -Force -ErrorAction SilentlyContinue
 
     if ($exitCode -eq 0) {
@@ -71,13 +80,15 @@ function Run-Step {
 
 $hasCargo = Get-Command cargo -ErrorAction SilentlyContinue
 if ($hasCargo) {
-    Write-Host "`n=== Rust ===" -ForegroundColor Cyan
-    $steps += Run-Step "Rust" "cargo fmt --check" "cargo fmt --all -- --check"
-    $steps += Run-Step "Rust" "cargo clippy"      "cargo clippy --workspace -- -D warnings"
-    $steps += Run-Step "Rust" "cargo test"         "cargo test --workspace 2>&1"
+    Write-Host ""
+    Write-Host "=== Rust ===" -ForegroundColor Cyan
+    $null = $steps.Add((Run-Step "Rust" "cargo fmt --check" "cargo fmt --all -- --check"))
+    $null = $steps.Add((Run-Step "Rust" "cargo clippy" "cargo clippy --workspace -- -D warnings"))
+    $null = $steps.Add((Run-Step "Rust" "cargo test" "cargo test --workspace"))
 } else {
-    Write-Host "`ncargo not found — skipping Rust checks" -ForegroundColor Yellow
-    $steps += @{ Section="Rust"; Name="cargo (not found)"; Status="SKIP"; ExitCode=0; Output="" }
+    Write-Host ""
+    Write-Host "cargo not found -- skipping Rust checks" -ForegroundColor Yellow
+    $null = $steps.Add(@{ Section="Rust"; Name="cargo (not found)"; Status="SKIP"; ExitCode=0; Output="" })
 }
 
 # --- Python checks ---
@@ -86,110 +97,130 @@ $hasPython = Get-Command python -ErrorAction SilentlyContinue
 $hasMaturin = Get-Command maturin -ErrorAction SilentlyContinue
 
 if ($hasPython -and (Test-Path "api")) {
-    Write-Host "`n=== Python ===" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "=== Python ===" -ForegroundColor Cyan
 
-    # Install API deps
-    $steps += Run-Step "Python" "pip install api[dev]" "pip install -e api/.[dev] --quiet"
+    $null = $steps.Add((Run-Step "Python" "pip install api[dev]" "pip install -e api/.[dev] --quiet"))
 
-    # Build PyO3 bindings if maturin is available
     if ($hasMaturin) {
-        $steps += Run-Step "Python" "maturin develop" "maturin develop -m crates/spdf-python/Cargo.toml"
+        $null = $steps.Add((Run-Step "Python" "maturin develop" "maturin develop -m crates/spdf-python/Cargo.toml"))
     } else {
-        Write-Host "  [Python] maturin not found — skipping native build" -ForegroundColor Yellow
-        $steps += @{ Section="Python"; Name="maturin (not found)"; Status="SKIP"; ExitCode=0; Output="" }
+        Write-Host "  [Python] maturin not found -- skipping native build" -ForegroundColor Yellow
+        $null = $steps.Add(@{ Section="Python"; Name="maturin (not found)"; Status="SKIP"; ExitCode=0; Output="" })
     }
 
-    # Run pytest
-    $steps += Run-Step "Python" "pytest" "python -m pytest api/tests/ -v --tb=short 2>&1"
+    $null = $steps.Add((Run-Step "Python" "pytest" "python -m pytest api/tests/ -v --tb=short"))
 } else {
-    if (-not $hasPython) { Write-Host "`npython not found — skipping Python checks" -ForegroundColor Yellow }
-    $steps += @{ Section="Python"; Name="python (not found)"; Status="SKIP"; ExitCode=0; Output="" }
+    if (-not $hasPython) {
+        Write-Host ""
+        Write-Host "python not found -- skipping Python checks" -ForegroundColor Yellow
+    }
+    $null = $steps.Add(@{ Section="Python"; Name="python (not found)"; Status="SKIP"; ExitCode=0; Output="" })
 }
 
 # --- Build report ---
 
-$allPass = -not ($steps | Where-Object { $_.Status -eq "FAIL" })
-$overallStatus = if ($allPass) { "ALL PASS" } else { "FAILING" }
-$passCount = ($steps | Where-Object { $_.Status -eq "PASS" }).Count
-$failCount = ($steps | Where-Object { $_.Status -eq "FAIL" }).Count
-$skipCount = ($steps | Where-Object { $_.Status -eq "SKIP" }).Count
+$failedSteps = @($steps | Where-Object { $_.Status -eq "FAIL" })
+$passedSteps = @($steps | Where-Object { $_.Status -eq "PASS" })
+$skippedSteps = @($steps | Where-Object { $_.Status -eq "SKIP" })
+
+$passCount = $passedSteps.Count
+$failCount = $failedSteps.Count
+$skipCount = $skippedSteps.Count
 $totalCount = $steps.Count
+$allPass = ($failCount -eq 0)
+$overallStatus = if ($allPass) { "ALL PASS" } else { "FAILING" }
 
-$report = @"
-# CHECK RESULTS
-
-## Run Info
-- **Version:** $version
-- **Commit:** $commit
-- **Branch:** $branch
-- **Date:** $date
-- **Machine:** $machine
-- **Overall:** $overallStatus ($passCount pass, $failCount fail, $skipCount skip / $totalCount total)
-
-## Steps
-
-"@
+$lines = [System.Collections.ArrayList]::new()
+$null = $lines.Add("# CHECK RESULTS")
+$null = $lines.Add("")
+$null = $lines.Add("## Run Info")
+$null = $lines.Add("- **Version:** $version")
+$null = $lines.Add("- **Commit:** $commit")
+$null = $lines.Add("- **Branch:** $branch")
+$null = $lines.Add("- **Date:** $date")
+$null = $lines.Add("- **Machine:** $machine")
+$null = $lines.Add("- **Overall:** $overallStatus ($passCount pass, $failCount fail, $skipCount skip / $totalCount total)")
+$null = $lines.Add("")
+$null = $lines.Add("## Steps")
 
 $currentSection = ""
 foreach ($step in $steps) {
     if ($step.Section -ne $currentSection) {
-        $report += "`n### $($step.Section)`n"
+        $null = $lines.Add("")
+        $null = $lines.Add("### $($step.Section)")
         $currentSection = $step.Section
     }
     $icon = switch ($step.Status) { "PASS" { "[x]" } "FAIL" { "[ ]" } "SKIP" { "[-]" } }
-    $report += "- $icon ``$($step.Name)``: **$($step.Status)**`n"
+    $null = $lines.Add("- $icon ${bt}$($step.Name)${bt}: **$($step.Status)**")
 }
 
 # --- Failure details ---
 
-$failures = $steps | Where-Object { $_.Status -eq "FAIL" }
-if ($failures) {
-    $report += "`n---`n`n## Failure Details`n"
+if ($failCount -gt 0) {
+    $null = $lines.Add("")
+    $null = $lines.Add("---")
+    $null = $lines.Add("")
+    $null = $lines.Add("## Failure Details")
 
-    foreach ($f in $failures) {
-        $report += "`n### $($f.Section): $($f.Name)`n"
-        $report += "Exit code: $($f.ExitCode)`n`n"
+    foreach ($f in $failedSteps) {
+        $null = $lines.Add("")
+        $null = $lines.Add("### $($f.Section): $($f.Name)")
+        $null = $lines.Add("Exit code: $($f.ExitCode)")
+        $null = $lines.Add("")
 
         if ($f.Output) {
-            $lines = $f.Output -split "`n"
-            # Show last 100 lines max
-            if ($lines.Count -gt 100) {
-                $lines = $lines[($lines.Count - 100)..($lines.Count - 1)]
-                $report += "*(truncated to last 100 lines)*`n`n"
+            $outputLines = $f.Output -split "\r?\n"
+            if ($outputLines.Count -gt 100) {
+                $outputLines = $outputLines[($outputLines.Count - 100)..($outputLines.Count - 1)]
+                $null = $lines.Add("*(truncated to last 100 lines)*")
+                $null = $lines.Add("")
             }
-            $trimmed = ($lines -join "`n").TrimEnd()
-            $report += "``````text`n$trimmed`n```````n"
+            $null = $lines.Add("${bt}${bt}${bt}text")
+            foreach ($ol in $outputLines) {
+                $null = $lines.Add($ol)
+            }
+            $null = $lines.Add("${bt}${bt}${bt}")
         }
     }
 } else {
-    $report += "`n---`n`nAll checks passed. No errors to report.`n"
+    $null = $lines.Add("")
+    $null = $lines.Add("---")
+    $null = $lines.Add("")
+    $null = $lines.Add("All checks passed. No errors to report.")
 }
 
-# --- Test summary (extract counts from cargo test + pytest output) ---
+# --- Test summary ---
 
-$report += "`n---`n`n## Test Summary`n"
+$null = $lines.Add("")
+$null = $lines.Add("---")
+$null = $lines.Add("")
+$null = $lines.Add("## Test Summary")
 
 $cargoTestStep = $steps | Where-Object { $_.Name -eq "cargo test" } | Select-Object -First 1
 if ($cargoTestStep -and $cargoTestStep.Output) {
-    $testLines = $cargoTestStep.Output -split "`n" | Where-Object { $_ -match "^test result:" }
-    if ($testLines) {
-        $report += "`n### Rust`n"
-        foreach ($line in $testLines) {
-            $report += "- ``$($line.Trim())```n"
+    $testResultLines = @($cargoTestStep.Output -split "\r?\n" | Where-Object { $_ -match "^test result:" })
+    if ($testResultLines.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("### Rust")
+        foreach ($tl in $testResultLines) {
+            $null = $lines.Add("- ${bt}$($tl.Trim())${bt}")
         }
     }
 }
 
 $pytestStep = $steps | Where-Object { $_.Name -eq "pytest" } | Select-Object -First 1
 if ($pytestStep -and $pytestStep.Output) {
-    $summaryLines = $pytestStep.Output -split "`n" | Where-Object { $_ -match "passed|failed|error|skipped" } | Select-Object -Last 1
-    if ($summaryLines) {
-        $report += "`n### Python`n"
-        $report += "- ``$($summaryLines.Trim())```n"
+    $summaryLine = $pytestStep.Output -split "\r?\n" | Where-Object { $_ -match "passed|failed|error|skipped" } | Select-Object -Last 1
+    if ($summaryLine) {
+        $null = $lines.Add("")
+        $null = $lines.Add("### Python")
+        $null = $lines.Add("- ${bt}$($summaryLine.Trim())${bt}")
     }
 }
 
-$report | Out-File -FilePath $reportFile -Encoding utf8 -Force
+# Write report
+($lines -join "`r`n") | Out-File -FilePath $reportFile -Encoding utf8 -Force
 
 # --- Console summary ---
 
