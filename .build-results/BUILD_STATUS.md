@@ -2,8 +2,8 @@
 
 ## Last Run
 - **Version:** 0.1.0-snapshot.1
-- **Date:** 2026-03-25T14:04:35Z
-- **Commit:** d64deba
+- **Date:** 2026-03-25T14:08:43Z
+- **Commit:** 11c4ea9
 - **Branch:** main
 - **Machine:** TUF_WARRIOR_DK
 
@@ -23,34 +23,23 @@
 
 ## Error Logs
 ### rust-build.log
-```ncargo.exe :    Compiling spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+```ncargo.exe :     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.62s
 At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
 +         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
 +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (   Compiling sp...ates\spdf-core):String) [], RemoteException
+    + CategoryInfo          : NotSpecified: (    Finished `d...get(s) in 0.62s:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-   Compiling spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
-   Compiling spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
-   Compiling spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
-   Compiling spdf-wasm v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-wasm)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.32s
 ```
 
 ### rust-clippy.log
-```ncargo.exe :     Checking spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+```ncargo.exe :     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.47s
 At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
 +         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
 +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (    Checking sp...ates\spdf-core):String) [], RemoteException
+    + CategoryInfo          : NotSpecified: (    Finished `d...get(s) in 0.47s:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-    Checking serde-wasm-bindgen v0.6.5
-    Checking spdf-renderer v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-renderer)
-    Checking spdf-validator v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-validator)
-    Checking spdf-wasm v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-wasm)
-    Checking spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.23s
 ```
 
 ### rust-test.log
