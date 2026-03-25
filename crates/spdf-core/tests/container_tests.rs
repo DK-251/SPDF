@@ -233,9 +233,13 @@ fn read_zip_missing_layer() {
 #[test]
 fn large_layer_round_trip() {
     let mut manifest = Manifest::new(DocumentId::new(), test_generator());
-    let big_data: Vec<u8> = (0u32..1024 * 1024)
-        .map(|i| i.wrapping_mul(2654435761).to_ne_bytes()[0])
-        .collect();
+    let big_data: Vec<u8> = (0u32..262144)
+        .flat_map(|i| {
+            let h = i.wrapping_mul(0x9E3779B9);
+            let h = h ^ (h >> 16);
+            h.to_le_bytes()
+        })
+        .collect(); // 1 MB of pseudo-random data
     let layers = ContainerLayers {
         semantic: big_data.clone(),
         layout: b"{}".to_vec(),

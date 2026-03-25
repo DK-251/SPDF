@@ -65,16 +65,40 @@ fn sample_invoice() -> Document {
                     ],
                     rows: vec![
                         vec![
-                            TableCell { value: "API Integration Service".into(), spdf_type: None },
-                            TableCell { value: "1".into(), spdf_type: Some("integer".into()) },
-                            TableCell { value: "75000.00".into(), spdf_type: Some("currency".into()) },
-                            TableCell { value: "75000.00".into(), spdf_type: Some("currency".into()) },
+                            TableCell {
+                                value: "API Integration Service".into(),
+                                spdf_type: None,
+                            },
+                            TableCell {
+                                value: "1".into(),
+                                spdf_type: Some("integer".into()),
+                            },
+                            TableCell {
+                                value: "75000.00".into(),
+                                spdf_type: Some("currency".into()),
+                            },
+                            TableCell {
+                                value: "75000.00".into(),
+                                spdf_type: Some("currency".into()),
+                            },
                         ],
                         vec![
-                            TableCell { value: "Custom PDF Templates (5)".into(), spdf_type: None },
-                            TableCell { value: "5".into(), spdf_type: Some("integer".into()) },
-                            TableCell { value: "10000.00".into(), spdf_type: Some("currency".into()) },
-                            TableCell { value: "50000.00".into(), spdf_type: Some("currency".into()) },
+                            TableCell {
+                                value: "Custom PDF Templates (5)".into(),
+                                spdf_type: None,
+                            },
+                            TableCell {
+                                value: "5".into(),
+                                spdf_type: Some("integer".into()),
+                            },
+                            TableCell {
+                                value: "10000.00".into(),
+                                spdf_type: Some("currency".into()),
+                            },
+                            TableCell {
+                                value: "50000.00".into(),
+                                spdf_type: Some("currency".into()),
+                            },
                         ],
                     ],
                     timestamps: ts(),
@@ -114,7 +138,11 @@ fn full_round_trip_invoice() {
 
     // 2. Validate the document structure
     let doc_report = validate_document(&doc);
-    assert!(doc_report.is_valid(), "Document validation failed: {:?}", doc_report.errors);
+    assert!(
+        doc_report.is_valid(),
+        "Document validation failed: {:?}",
+        doc_report.errors
+    );
 
     // 3. Serialize DOM to JSON (semantic layer)
     let semantic_json = serde_json::to_vec_pretty(&doc).expect("DOM serialization failed");
@@ -122,9 +150,17 @@ fn full_round_trip_invoice() {
 
     // 4. Render to PDF
     let pdf_bytes = render_to_pdf(&doc).expect("PDF rendering failed");
-    assert!(pdf_bytes.len() > 100, "PDF too small: {} bytes", pdf_bytes.len());
+    assert!(
+        pdf_bytes.len() > 100,
+        "PDF too small: {} bytes",
+        pdf_bytes.len()
+    );
     // Verify it starts with %PDF
-    assert_eq!(&pdf_bytes[..5], b"%PDF-", "rendered output is not a valid PDF");
+    assert_eq!(
+        &pdf_bytes[..5],
+        b"%PDF-",
+        "rendered output is not a valid PDF"
+    );
 
     // 5. Build container layers
     let layers = ContainerLayers {
@@ -135,7 +171,8 @@ fn full_round_trip_invoice() {
         metadata: serde_json::to_vec(&serde_json::json!({
             "title": doc.title,
             "locale": doc.locale,
-        })).unwrap(),
+        }))
+        .unwrap(),
         audit: serde_json::to_vec(&serde_json::json!({"events": []})).unwrap(),
     };
 
