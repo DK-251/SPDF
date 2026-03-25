@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.4
+- **Version:** 0.1.0-snapshot.5
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 in progress — PyO3 bindings + binding tests + Phase 1 regression tests complete
+- **Status:** Week 3 in progress — FastAPI app + 6 endpoints (generate, validate, render, parse, extract, health) + 16 tests
 
 ---
 
@@ -41,7 +41,7 @@
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
 | 11 | PyO3 bindings | DONE | 0.1.0-s.4 | 5 PyO3 functions + SpdfEngine wrapper + 20 binding logic tests + 6 regression tests |
-| 12-13 | Document generation + extraction endpoints | TODO | — | |
+| 12-13 | Document generation + extraction endpoints | DONE | 0.1.0-s.5 | FastAPI app, 6 endpoints, Pydantic schemas, error handling, 16 tests |
 | 14-15 | Account endpoints + rate limiting | TODO | — | |
 
 ### Week 4: Auth & Billing
@@ -84,3 +84,5 @@
 | 2026-03-25 | LNK1104 msvcrt.lib missing on TUF | Installed MSVC C++ build tools | 0.1.0-s.1 |
 | 2026-03-25 | zip crate v2.4 FileOptions needs type annotation | Changed to SimpleFileOptions | 0.1.0-s.1 |
 | 2026-03-25 | large_layer_round_trip fails: decompression bomb false positive (ratio 461:1 vs max 100:1) | Raised MAX_DECOMPRESSION_RATIO to 1000 (real bombs exceed 1M:1) | 0.1.0-s.4 |
+| 2026-03-25 | clippy: unused DocumentId import + pyo3 useless_conversion lint | Removed import, added crate-level #![allow] for pyo3 macro issue | 0.1.0-s.4 |
+| 2026-03-25 | rustfmt: binding_logic_tests.rs + lib.rs formatting mismatches | Matched exact rustfmt output for all flagged lines | 0.1.0-s.4 |

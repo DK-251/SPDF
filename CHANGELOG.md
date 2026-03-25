@@ -10,6 +10,30 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.5] - 2026-03-25
+
+### Added
+- FastAPI application entry point (`api/app/main.py`) with CORS middleware
+- Document router (`api/app/routers/documents.py`) with 6 endpoints:
+  - `POST /api/v1/documents/generate` — build .spdf from layer JSON dicts
+  - `POST /api/v1/documents/validate` — validate uploaded .spdf container
+  - `POST /api/v1/documents/render` — render .spdf semantic layer to PDF
+  - `POST /api/v1/documents/parse` — parse and validate semantic JSON
+  - `POST /api/v1/documents/extract` — extract structured invoice data from .spdf
+  - `GET /api/v1/health` — health check with engine version
+- Pydantic request/response schemas (`api/app/schemas.py`)
+- Structured error handling (`api/app/errors.py`) — maps engine errors to HTTP status codes
+- `api/pyproject.toml` — project dependencies (fastapi, uvicorn, pydantic, python-multipart)
+- Test suite: 16 endpoint tests (`api/tests/test_documents.py`) with shared fixtures (`conftest.py`)
+- Upload size enforcement (100 MB limit) and ZIP magic byte validation
+
+### Build Target
+- [ ] pip install -e ".[dev]" + maturin develop
+- [ ] pytest tests/ -v
+- [ ] uvicorn app.main:app --port 8000
+
+---
+
 ## [0.1.0-snapshot.4] - 2026-03-25
 
 ### Added
@@ -25,13 +49,14 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ### Fixed
 - `MAX_DECOMPRESSION_RATIO` raised from 100 to 1000 — fixes `large_layer_round_trip` false positive (real ZIP bombs exceed 1M:1)
+- Removed unused `DocumentId` import in `spdf-python`
+- Added `#![allow(clippy::useless_conversion)]` in `spdf-python` — suppresses pyo3 proc macro lint
+- Fixed rustfmt formatting in `binding_logic_tests.rs` (7 locations) and `lib.rs` (2 locations)
 
 ### Build Target
-- [ ] cargo build --workspace
-- [ ] cargo test --workspace
-- [ ] cargo clippy -- -D warnings
-- [ ] maturin develop --release (build PyO3 extension)
-- [ ] python -c "import spdf_native" (verify import)
+- [x] cargo fmt --check
+- [x] cargo clippy -- -D warnings
+- [x] cargo test --workspace
 
 ---
 
