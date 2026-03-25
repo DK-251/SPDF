@@ -1,0 +1,20 @@
+[package]
+name = "spdf-python"
+description = "Python bindings for SPDF core via PyO3"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+name = "spdf_python"
+crate-type = ["cdylib"]
+
+[dependencies]
+spdf-core = { path = "../spdf-core" }
+spdf-renderer = { path = "../spdf-renderer" }
+spdf-validator = { path = "../spdf-validator" }
+pyo3 = { version = "0.22", features = ["extension-module"] }
+serde.workspace = true
+serde_json.workspace = true

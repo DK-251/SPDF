@@ -1,0 +1,18 @@
+[package]
+name = "spdf-wasm"
+description = "WASM bindings for SPDF core (browser Studio)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+spdf-core = { path = "../spdf-core" }
+wasm-bindgen = "0.2"
+serde.workspace = true
+serde_json.workspace = true
+serde-wasm-bindgen = "0.6"

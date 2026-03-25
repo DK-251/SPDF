@@ -1,0 +1,53 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+!crates/*/Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+.venv/
+venv/
+*.egg
+
+# Node / Studio
+node_modules/
+studio/dist/
+studio/.vite/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build results (tracked selectively)
+.build-results/*.log
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+lcov.info
+
+# WASM output
+crates/spdf-wasm/pkg/
+
+# Docker
+docker-compose.override.yml

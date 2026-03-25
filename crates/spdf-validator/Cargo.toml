@@ -1,0 +1,15 @@
+[package]
+name = "spdf-validator"
+description = "Schema and structural validator for SPDF documents"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+spdf-core = { path = "../spdf-core" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+log.workspace = true
