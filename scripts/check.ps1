@@ -40,24 +40,19 @@ function Run-Step {
 
     Write-Host "  [$Section] $Name ..." -NoNewline
 
-    $tempOut = [System.IO.Path]::GetTempFileName()
     $exitCode = 0
+    $output = ""
 
     try {
-        Invoke-Expression $Cmd 2>&1 | Out-File -FilePath $tempOut -Encoding utf8
+        $output = (Invoke-Expression "$Cmd 2>&1" | Out-String).Trim()
         $exitCode = $LASTEXITCODE
         if ($null -eq $exitCode) { $exitCode = 0 }
     } catch {
-        $_.Exception.Message | Out-File -FilePath $tempOut -Encoding utf8 -Append
+        $output = $_.Exception.Message
         $exitCode = 1
     }
 
-    $output = ""
-    if (Test-Path $tempOut) {
-        $output = Get-Content $tempOut -Raw -ErrorAction SilentlyContinue
-        if ($null -eq $output) { $output = "" }
-    }
-    Remove-Item $tempOut -Force -ErrorAction SilentlyContinue
+    if ($null -eq $output) { $output = "" }
 
     if ($exitCode -eq 0) {
         Write-Host " PASS" -ForegroundColor Green
