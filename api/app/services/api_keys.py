@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import secrets
 
-from passlib.hash import bcrypt
+import bcrypt as _bcrypt
 
 # Key format: sk_{type}_{26 chars}
 _KEY_LENGTH = 26
@@ -17,20 +17,20 @@ def generate_api_key(key_type: str = "live") -> tuple[str, str, str]:
     """
     token = secrets.token_urlsafe(_KEY_LENGTH)[:_KEY_LENGTH]
     full_key = f"sk_{key_type}_{token}"
-    key_hash = bcrypt.using(rounds=12).hash(full_key)
+    key_hash = _bcrypt.hashpw(full_key.encode(), _bcrypt.gensalt(rounds=12)).decode()
     key_prefix = full_key[:16]
     return full_key, key_hash, key_prefix
 
 
 def hash_api_key(plain_key: str) -> str:
     """Hash an API key with bcrypt (rounds=12)."""
-    return bcrypt.using(rounds=12).hash(plain_key)
+    return _bcrypt.hashpw(plain_key.encode(), _bcrypt.gensalt(rounds=12)).decode()
 
 
 def verify_api_key(plain_key: str, key_hash: str) -> bool:
     """Verify a plain API key against its bcrypt hash."""
     try:
-        return bcrypt.verify(plain_key, key_hash)
+        return _bcrypt.checkpw(plain_key.encode(), key_hash.encode())
     except Exception:
         return False
 
@@ -48,7 +48,7 @@ def seed_test_user() -> None:
 
     if user_store.get_user(TEST_USER_ID):
         return
-    key_hash = bcrypt.using(rounds=4).hash(TEST_API_KEY)
+    key_hash = _bcrypt.hashpw(TEST_API_KEY.encode(), _bcrypt.gensalt(rounds=4)).decode()
     user_store.add_user(
         user_id=TEST_USER_ID,
         tier="FREE",
