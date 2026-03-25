@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.6
+- **Version:** 0.1.0-snapshot.7
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 in progress — all checks green (93 Rust + 32 Python tests), `just check` fully operational
+- **Status:** Week 3 in progress — account endpoints + rate limiting implemented, pending TUF verification
 
 ---
 
@@ -43,7 +43,7 @@
 | 11 | PyO3 bindings | DONE | 0.1.0-s.4 | 5 PyO3 functions + SpdfEngine wrapper + 20 binding logic tests + 6 regression tests |
 | 12-13 | Document generation + extraction endpoints | DONE | 0.1.0-s.5 | FastAPI app, 6 endpoints, Pydantic schemas, error handling |
 | 12-13 | Test wiring + edge cases + unified check | DONE | 0.1.0-s.6 | 32 API tests, 3 new validator tests, unified `just check` (all green on TUF) |
-| 14-15 | Account endpoints + rate limiting | TODO | — | |
+| 14-15 | Account endpoints + rate limiting | DONE | 0.1.0-s.7 | 3 account endpoints, rate-limit middleware, in-memory stores, 33 new tests |
 
 ### Week 4: Auth & Billing
 

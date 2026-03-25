@@ -12,6 +12,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.api_keys import TEST_API_KEY, seed_test_user
+from app.services.stores import rate_limit_store, user_store
 
 
 def _eid() -> str:
@@ -34,8 +36,29 @@ def engine_available() -> bool:
         return False
 
 
+@pytest.fixture(autouse=True)
+def _reset_stores() -> None:
+    """Reset in-memory stores and re-seed the test user before each test."""
+    user_store.reset()
+    rate_limit_store.reset()
+    seed_test_user()
+
+
 @pytest.fixture()
-def client() -> TestClient:
+def auth_headers() -> dict[str, str]:
+    """Authorization header with the test API key."""
+    return {"Authorization": f"Bearer {TEST_API_KEY}"}
+
+
+@pytest.fixture()
+def client(auth_headers: dict[str, str]) -> TestClient:
+    """TestClient with default auth headers (authenticated as test user)."""
+    return TestClient(app, headers=auth_headers)
+
+
+@pytest.fixture()
+def raw_client() -> TestClient:
+    """TestClient without auth headers (for testing auth failures)."""
     return TestClient(app)
 
 

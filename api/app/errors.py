@@ -31,6 +31,10 @@ class SpdfApiError(Exception):
         super().__init__(detail)
 
 
+RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
+UNAUTHORIZED = "UNAUTHORIZED"
+
+
 def handle_engine_error(exc: Exception) -> SpdfApiError:
     """Translate a Rust engine ValueError into an appropriate SpdfApiError."""
     msg = str(exc).lower()

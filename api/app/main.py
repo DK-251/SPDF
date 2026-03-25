@@ -7,7 +7,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.errors import register_exception_handlers
-from app.routers import documents
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.routers import account, documents
+from app.services.api_keys import seed_test_user
 
 app = FastAPI(
     title="SPDF API",
@@ -15,6 +17,7 @@ app = FastAPI(
     description="Structured PDF document generation, validation, and extraction API",
 )
 
+app.add_middleware(RateLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,3 +28,6 @@ app.add_middleware(
 
 register_exception_handlers(app)
 app.include_router(documents.router)
+app.include_router(account.router)
+
+seed_test_user()

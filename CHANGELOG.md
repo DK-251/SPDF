@@ -10,6 +10,36 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.7] - 2026-03-26
+
+### Added
+- Account router (`api/app/routers/account.py`) with 3 endpoints:
+  - `GET /api/v1/account/api-key` -- view current key prefix and metadata
+  - `POST /api/v1/account/api-key/rotate` -- generate new key, returns full key once
+  - `GET /api/v1/account/usage` -- today's usage per endpoint family with tier limits
+- Rate-limit middleware (`api/app/middleware/rate_limit.py`):
+  - Per-user, per-endpoint-family, per-calendar-day (UTC) quota enforcement
+  - API key authentication via `Authorization: Bearer sk_...` header
+  - `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` headers on all responses
+  - ENTERPRISE tier unlimited; FREE/PRO/TEAM tiered limits
+  - Health endpoint bypasses auth and rate limiting
+- In-memory stores (`api/app/services/stores.py`): UserStore + RateLimitStore with clean interfaces for future DB/Redis swap
+- API key service (`api/app/services/api_keys.py`): generation (`sk_{type}_{26 chars}`), bcrypt hashing, verification, test key seeding
+- Pydantic schemas: `ApiKeyResponse`, `ApiKeyRotateResponse`, `UsageResponse`
+- Error codes: `RATE_LIMIT_EXCEEDED` (429), `UNAUTHORIZED` (401)
+- 18 account endpoint tests (`test_account.py`): key info, rotation, old key invalidation, usage tracking, auth failures, method guards
+- 15 rate-limit tests (`test_rate_limit.py`): auth enforcement, header presence, quota exceeded 429, family isolation, enterprise unlimited, response structure
+- `passlib[bcrypt]` dependency added to `api/pyproject.toml`
+
+### Changed
+- `conftest.py`: `client` fixture now includes auth headers by default; added `raw_client`, `auth_headers`, `_reset_stores` (autouse) fixtures
+- `main.py`: wired RateLimitMiddleware + account router + test user seeding
+
+### Build Target
+- [ ] just check -- pending TUF verification
+
+---
+
 ## [0.1.0-snapshot.6] - 2026-03-25
 
 ### Added

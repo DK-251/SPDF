@@ -72,3 +72,27 @@ class HealthResponse(BaseModel):
     status: str = "ok"
     engine_version: str
     api_version: str = "0.1.0"
+
+
+# --- Account ---
+
+
+class ApiKeyResponse(BaseModel):
+    key_prefix: str
+    created_at: str
+    last_used_at: str | None = None
+
+
+class ApiKeyRotateResponse(BaseModel):
+    api_key: str
+    key_prefix: str
+    created_at: str
+    warning: str = "Store this key securely. It will not be shown again."
+
+
+class UsageResponse(BaseModel):
+    user_id: str
+    tier: str
+    usage: dict[str, int] = Field(default_factory=dict)
+    limits: dict[str, int] = Field(default_factory=dict)
+    next_reset_at: str
