@@ -171,9 +171,7 @@ fn horizontal_rule_element_serde() {
 
 #[test]
 fn page_break_element_serde() {
-    let el = Element::PageBreak(PageBreakElement {
-        eid: eid(),
-    });
+    let el = Element::PageBreak(PageBreakElement { eid: eid() });
     let json = serde_json::to_string(&el).unwrap();
     let _: Element = serde_json::from_str(&json).unwrap();
 }
@@ -228,7 +226,12 @@ fn invoice_header_element_serde() {
 fn line_item_table_element_serde() {
     let el = Element::LineItemTable(LineItemTableElement {
         eid: eid(),
-        headers: vec!["Description".into(), "Qty".into(), "Rate".into(), "Amount".into()],
+        headers: vec![
+            "Description".into(),
+            "Qty".into(),
+            "Rate".into(),
+            "Amount".into(),
+        ],
         rows: vec![vec![
             TableCell {
                 value: "Consulting".to_string(),
@@ -587,7 +590,12 @@ fn full_invoice_document_serde() {
                 }),
                 Element::LineItemTable(LineItemTableElement {
                     eid: eid(),
-                    headers: vec!["Item".into(), "Qty".into(), "Rate".into(), "Amount".into()],
+                    headers: vec![
+                        "Item".into(),
+                        "Qty".into(),
+                        "Rate".into(),
+                        "Amount".into(),
+                    ],
                     rows: vec![vec![
                         TableCell {
                             value: "API Integration".into(),

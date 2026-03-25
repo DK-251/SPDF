@@ -51,11 +51,17 @@ fn manifest_checksums_match_layer_content() {
     let bytes = write_container(&mut manifest, &layers, &[]).unwrap();
     let extracted = read_container(&bytes).unwrap();
 
-    assert_eq!(extracted.manifest.layers.semantic, sha256_hex(&layers.semantic));
+    assert_eq!(
+        extracted.manifest.layers.semantic,
+        sha256_hex(&layers.semantic)
+    );
     assert_eq!(extracted.manifest.layers.layout, sha256_hex(&layers.layout));
     assert_eq!(extracted.manifest.layers.styles, sha256_hex(&layers.styles));
     assert_eq!(extracted.manifest.layers.render, sha256_hex(&layers.render));
-    assert_eq!(extracted.manifest.layers.metadata, sha256_hex(&layers.metadata));
+    assert_eq!(
+        extracted.manifest.layers.metadata,
+        sha256_hex(&layers.metadata)
+    );
     assert_eq!(extracted.manifest.layers.audit, sha256_hex(&layers.audit));
 }
 
@@ -149,14 +155,18 @@ fn corrupted_layer_detected() {
 
     // Write a new container where manifest checksums don't match actual layers
     let mut bad_manifest = extracted.manifest.clone();
-    bad_manifest.layers.semantic = "0000000000000000000000000000000000000000000000000000000000000000".to_string();
+    bad_manifest.layers.semantic =
+        "0000000000000000000000000000000000000000000000000000000000000000".to_string();
     // Don't re-finalize — keep bad checksum
 
     let bad_bytes = build_container_raw(&bad_manifest, &layers, &[]);
     let result = read_container(&bad_bytes);
     assert!(result.is_err(), "should detect checksum mismatch");
     let err = format!("{}", result.unwrap_err());
-    assert!(err.contains("checksum mismatch"), "error should mention checksum: {err}");
+    assert!(
+        err.contains("checksum mismatch"),
+        "error should mention checksum: {err}"
+    );
 }
 
 #[test]
@@ -201,7 +211,10 @@ fn read_zip_missing_manifest() {
     let result = read_container(&buf);
     assert!(result.is_err());
     let err = format!("{}", result.unwrap_err());
-    assert!(err.contains("manifest.json"), "should mention missing manifest: {err}");
+    assert!(
+        err.contains("manifest.json"),
+        "should mention missing manifest: {err}"
+    );
 }
 
 #[test]
@@ -286,8 +299,8 @@ fn build_container_raw(
     let mut zip = zip::ZipWriter::new(Cursor::new(&mut buf));
     let options = zip::write::SimpleFileOptions::default()
         .compression_method(zip::CompressionMethod::Deflated);
-    let store = zip::write::SimpleFileOptions::default()
-        .compression_method(zip::CompressionMethod::Stored);
+    let store =
+        zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
 
     zip.start_file("manifest.json", options).unwrap();
     let manifest_json = serde_json::to_vec_pretty(manifest).unwrap();
