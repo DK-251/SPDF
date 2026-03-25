@@ -99,8 +99,14 @@ fn table_element_serde() {
         headers: vec!["Name".to_string(), "Amount".to_string()],
         rows: vec![TableRow {
             cells: vec![
-                TableCell { value: "Item A".to_string(), spdf_type: None },
-                TableCell { value: "2500.00".to_string(), spdf_type: Some("currency".to_string()) },
+                TableCell {
+                    value: "Item A".to_string(),
+                    spdf_type: None,
+                },
+                TableCell {
+                    value: "2500.00".to_string(),
+                    spdf_type: Some("currency".to_string()),
+                },
             ],
         }],
         timestamps: ts(),
@@ -224,10 +230,22 @@ fn line_item_table_element_serde() {
         eid: eid(),
         headers: vec!["Description".into(), "Qty".into(), "Rate".into(), "Amount".into()],
         rows: vec![vec![
-            TableCell { value: "Consulting".to_string(), spdf_type: None },
-            TableCell { value: "10".to_string(), spdf_type: Some("integer".to_string()) },
-            TableCell { value: "5000.00".to_string(), spdf_type: Some("currency".to_string()) },
-            TableCell { value: "50000.00".to_string(), spdf_type: Some("currency".to_string()) },
+            TableCell {
+                value: "Consulting".to_string(),
+                spdf_type: None,
+            },
+            TableCell {
+                value: "10".to_string(),
+                spdf_type: Some("integer".to_string()),
+            },
+            TableCell {
+                value: "5000.00".to_string(),
+                spdf_type: Some("currency".to_string()),
+            },
+            TableCell {
+                value: "50000.00".to_string(),
+                spdf_type: Some("currency".to_string()),
+            },
         ]],
         timestamps: ts(),
     });
@@ -438,13 +456,21 @@ fn document_state_serde_screaming_snake() {
 #[test]
 fn element_id_format() {
     let id = ElementId::new();
-    assert!(id.0.starts_with("el-"), "ElementId should start with el-: {}", id.0);
+    assert!(
+        id.0.starts_with("el-"),
+        "ElementId should start with el-: {}",
+        id.0
+    );
 }
 
 #[test]
 fn document_id_format() {
     let id = DocumentId::new();
-    assert!(id.0.starts_with("spdf-"), "DocumentId should start with spdf-: {}", id.0);
+    assert!(
+        id.0.starts_with("spdf-"),
+        "DocumentId should start with spdf-: {}",
+        id.0
+    );
 }
 
 #[test]
@@ -454,15 +480,30 @@ fn spdf_version_display() {
 
 #[test]
 fn text_direction_serde() {
-    assert_eq!(serde_json::to_string(&TextDirection::Ltr).unwrap(), r#""LTR""#);
-    assert_eq!(serde_json::to_string(&TextDirection::Rtl).unwrap(), r#""RTL""#);
+    assert_eq!(
+        serde_json::to_string(&TextDirection::Ltr).unwrap(),
+        r#""LTR""#
+    );
+    assert_eq!(
+        serde_json::to_string(&TextDirection::Rtl).unwrap(),
+        r#""RTL""#
+    );
 }
 
 #[test]
 fn source_format_serde() {
-    assert_eq!(serde_json::to_string(&SourceFormat::Native).unwrap(), r#""NATIVE""#);
-    assert_eq!(serde_json::to_string(&SourceFormat::ConvertedFromPdf).unwrap(), r#""CONVERTED_FROM_PDF""#);
-    assert_eq!(serde_json::to_string(&SourceFormat::Template).unwrap(), r#""TEMPLATE""#);
+    assert_eq!(
+        serde_json::to_string(&SourceFormat::Native).unwrap(),
+        r#""NATIVE""#
+    );
+    assert_eq!(
+        serde_json::to_string(&SourceFormat::ConvertedFromPdf).unwrap(),
+        r#""CONVERTED_FROM_PDF""#
+    );
+    assert_eq!(
+        serde_json::to_string(&SourceFormat::Template).unwrap(),
+        r#""TEMPLATE""#
+    );
 }
 
 // ---------- Multi-page document ----------
@@ -547,14 +588,24 @@ fn full_invoice_document_serde() {
                 Element::LineItemTable(LineItemTableElement {
                     eid: eid(),
                     headers: vec!["Item".into(), "Qty".into(), "Rate".into(), "Amount".into()],
-                    rows: vec![
-                        vec![
-                            TableCell { value: "API Integration".into(), spdf_type: None },
-                            TableCell { value: "1".into(), spdf_type: Some("integer".into()) },
-                            TableCell { value: "75000.00".into(), spdf_type: Some("currency".into()) },
-                            TableCell { value: "75000.00".into(), spdf_type: Some("currency".into()) },
-                        ],
-                    ],
+                    rows: vec![vec![
+                        TableCell {
+                            value: "API Integration".into(),
+                            spdf_type: None,
+                        },
+                        TableCell {
+                            value: "1".into(),
+                            spdf_type: Some("integer".into()),
+                        },
+                        TableCell {
+                            value: "75000.00".into(),
+                            spdf_type: Some("currency".into()),
+                        },
+                        TableCell {
+                            value: "75000.00".into(),
+                            spdf_type: Some("currency".into()),
+                        },
+                    ]],
                     timestamps: ts(),
                 }),
                 Element::PaymentTerms(PaymentTermsElement {
