@@ -59,7 +59,8 @@ pub fn render_to_pdf(doc: &Document) -> SpdfResult<Vec<u8>> {
         }
 
         let content = Content { operations: ops };
-        let content_bytes = content.encode()
+        let content_bytes = content
+            .encode()
             .map_err(|e| SpdfError::Io(std::io::Error::other(e.to_string())))?;
 
         let content_id = pdf.add_object(Stream::new(dictionary! {}, content_bytes));
@@ -77,7 +78,8 @@ pub fn render_to_pdf(doc: &Document) -> SpdfResult<Vec<u8>> {
     // If no pages in document, create one empty page
     if page_ids.is_empty() {
         let content = Content { operations: vec![] };
-        let content_bytes = content.encode()
+        let content_bytes = content
+            .encode()
             .map_err(|e| SpdfError::Io(std::io::Error::other(e.to_string())))?;
         let content_id = pdf.add_object(Stream::new(dictionary! {}, content_bytes));
         let page_id = pdf.add_object(dictionary! {
@@ -131,47 +133,116 @@ fn render_element(element: &Element, ops: &mut Vec<Operation>, cursor_y: &mut f3
                 let header_line = t.headers.join("  |  ");
                 render_text(ops, cursor_y, &header_line, "F2", TABLE_FONT_SIZE);
                 // Separator
-                render_text(ops, cursor_y, &"-".repeat(header_line.len()), "F1", TABLE_FONT_SIZE);
+                render_text(
+                    ops,
+                    cursor_y,
+                    &"-".repeat(header_line.len()),
+                    "F1",
+                    TABLE_FONT_SIZE,
+                );
             }
             for row in &t.rows {
-                let line: String = row.cells.iter().map(|c| c.value.as_str()).collect::<Vec<_>>().join("  |  ");
+                let line: String = row
+                    .cells
+                    .iter()
+                    .map(|c| c.value.as_str())
+                    .collect::<Vec<_>>()
+                    .join("  |  ");
                 render_text(ops, cursor_y, &line, "F1", TABLE_FONT_SIZE);
             }
             *cursor_y -= LINE_HEIGHT * 0.5;
         }
         Element::InvoiceHeader(ih) => {
-            render_text(ops, cursor_y, &format!("Invoice: {}", ih.invoice_number), "F2", 16.0);
-            render_text(ops, cursor_y, &format!("Date: {}  Due: {}", ih.issue_date, ih.due_date), "F1", BODY_FONT_SIZE);
-            render_text(ops, cursor_y, &format!("From: {}", ih.vendor.name), "F1", BODY_FONT_SIZE);
-            render_text(ops, cursor_y, &format!("To: {}", ih.client.name), "F1", BODY_FONT_SIZE);
+            render_text(
+                ops,
+                cursor_y,
+                &format!("Invoice: {}", ih.invoice_number),
+                "F2",
+                16.0,
+            );
+            render_text(
+                ops,
+                cursor_y,
+                &format!("Date: {}  Due: {}", ih.issue_date, ih.due_date),
+                "F1",
+                BODY_FONT_SIZE,
+            );
+            render_text(
+                ops,
+                cursor_y,
+                &format!("From: {}", ih.vendor.name),
+                "F1",
+                BODY_FONT_SIZE,
+            );
+            render_text(
+                ops,
+                cursor_y,
+                &format!("To: {}", ih.client.name),
+                "F1",
+                BODY_FONT_SIZE,
+            );
             *cursor_y -= LINE_HEIGHT * 0.5;
         }
         Element::LineItemTable(lt) => {
             if !lt.headers.is_empty() {
                 let header_line = lt.headers.join("  |  ");
                 render_text(ops, cursor_y, &header_line, "F2", TABLE_FONT_SIZE);
-                render_text(ops, cursor_y, &"-".repeat(header_line.len()), "F1", TABLE_FONT_SIZE);
+                render_text(
+                    ops,
+                    cursor_y,
+                    &"-".repeat(header_line.len()),
+                    "F1",
+                    TABLE_FONT_SIZE,
+                );
             }
             for row in &lt.rows {
-                let line: String = row.iter().map(|c| c.value.as_str()).collect::<Vec<_>>().join("  |  ");
+                let line: String = row
+                    .iter()
+                    .map(|c| c.value.as_str())
+                    .collect::<Vec<_>>()
+                    .join("  |  ");
                 render_text(ops, cursor_y, &line, "F1", TABLE_FONT_SIZE);
             }
             *cursor_y -= LINE_HEIGHT * 0.5;
         }
         Element::PaymentTerms(pt) => {
-            render_text(ops, cursor_y, &format!("Subtotal: {}", pt.subtotal), "F1", BODY_FONT_SIZE);
+            render_text(
+                ops,
+                cursor_y,
+                &format!("Subtotal: {}", pt.subtotal),
+                "F1",
+                BODY_FONT_SIZE,
+            );
             if let Some(ref disc) = pt.discount {
-                render_text(ops, cursor_y, &format!("Discount: {disc}"), "F1", BODY_FONT_SIZE);
+                render_text(
+                    ops,
+                    cursor_y,
+                    &format!("Discount: {disc}"),
+                    "F1",
+                    BODY_FONT_SIZE,
+                );
             }
             if let (Some(ref label), Some(ref amount)) = (&pt.tax_label, &pt.tax_amount) {
-                render_text(ops, cursor_y, &format!("{label}: {amount}"), "F1", BODY_FONT_SIZE);
+                render_text(
+                    ops,
+                    cursor_y,
+                    &format!("{label}: {amount}"),
+                    "F1",
+                    BODY_FONT_SIZE,
+                );
             }
             render_text(ops, cursor_y, &format!("Total: {}", pt.total), "F2", 14.0);
             *cursor_y -= LINE_HEIGHT;
         }
         Element::SignatureBlock(sb) => {
             *cursor_y -= LINE_HEIGHT;
-            render_text(ops, cursor_y, &format!("Signed by: {}", sb.signer_name), "F1", BODY_FONT_SIZE);
+            render_text(
+                ops,
+                cursor_y,
+                &format!("Signed by: {}", sb.signer_name),
+                "F1",
+                BODY_FONT_SIZE,
+            );
             if let Some(ref title) = sb.signer_title {
                 render_text(ops, cursor_y, title, "F1", 9.0);
             }
@@ -190,7 +261,13 @@ fn render_element(element: &Element, ops: &mut Vec<Operation>, cursor_y: &mut f3
             *cursor_y = MARGIN_BOTTOM; // force next element to be skipped
         }
         Element::Annotation(a) => {
-            render_text(ops, cursor_y, &format!("[Note by {}]: {}", a.author, a.content), "F1", 9.0);
+            render_text(
+                ops,
+                cursor_y,
+                &format!("[Note by {}]: {}", a.author, a.content),
+                "F1",
+                9.0,
+            );
         }
         _ => {
             // Image, VectorImage, Attachment, Stamp, Redaction, FormField, VariablePlaceholder
@@ -199,28 +276,22 @@ fn render_element(element: &Element, ops: &mut Vec<Operation>, cursor_y: &mut f3
     }
 }
 
-fn render_text(
-    ops: &mut Vec<Operation>,
-    cursor_y: &mut f32,
-    text: &str,
-    font: &str,
-    size: f32,
-) {
+fn render_text(ops: &mut Vec<Operation>, cursor_y: &mut f32, text: &str, font: &str, size: f32) {
     if *cursor_y < MARGIN_BOTTOM {
         return;
     }
 
     ops.push(Operation::new("BT", vec![]));
-    ops.push(Operation::new(
-        "Tf",
-        vec![font.into(), size.into()],
-    ));
+    ops.push(Operation::new("Tf", vec![font.into(), size.into()]));
     ops.push(Operation::new(
         "Td",
         vec![MARGIN_LEFT.into(), (*cursor_y).into()],
     ));
     // Escape parentheses in text for PDF string safety
-    let escaped = text.replace('\\', "\\\\").replace('(', "\\(").replace(')', "\\)");
+    let escaped = text
+        .replace('\\', "\\\\")
+        .replace('(', "\\(")
+        .replace(')', "\\)");
     ops.push(Operation::new("Tj", vec![Object::string_literal(escaped)]));
     ops.push(Operation::new("ET", vec![]));
 

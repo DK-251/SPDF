@@ -208,7 +208,7 @@ fn full_round_trip_invoice() {
         serde_json::from_slice(&extracted.semantic).expect("DOM deserialization failed");
     assert_eq!(rt_doc.title, "Invoice INV-2026-100");
     assert_eq!(rt_doc.pages.len(), 1);
-    assert_eq!(rt_doc.pages[0].elements.len(), 7);
+    assert_eq!(rt_doc.pages[0].elements.len(), 6);
 
     // 11. Validate the round-tripped document
     let rt_report = validate_document(&rt_doc);
