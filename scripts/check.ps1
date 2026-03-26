@@ -1,8 +1,9 @@
-# Unified CI check: Rust (fmt + clippy + test) + Python (maturin + pytest)
+# Unified CI check: Rust (fmt + clippy + test) + Python (maturin + pytest) + Studio (npm + vitest + vite)
 # Usage: just check  (run on ASUS TUF after pull)
 #
 # Produces:
-#   .build-results/CHECK_RESULTS.md -- structured pass/fail with per-module breakdown
+#   .build-results/CHECK_RESULTS.md  -- structured pass/fail with per-module breakdown
+#   .build-results/check-session.log -- full console log from start to exit
 #
 # After running:
 #   git add .build-results && git commit -m "check: <version>" && git push
@@ -12,6 +13,9 @@ $ErrorActionPreference = "Continue"
 # Backtick character for markdown output (avoids PS escape conflicts)
 $bt = [char]96
 
+# ESC character for ANSI stripping
+$ESC = [char]27
+
 # Refresh PATH
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $cargoBin = Join-Path $env:USERPROFILE ".cargo\bin"
@@ -19,17 +23,23 @@ if (Test-Path $cargoBin) { $env:Path += ";$cargoBin" }
 
 $resultsDir = ".build-results"
 $reportFile = Join-Path $resultsDir "CHECK_RESULTS.md"
+$sessionLog = Join-Path $resultsDir "check-session.log"
 
 if (-not (Test-Path $resultsDir)) { New-Item -ItemType Directory -Path $resultsDir | Out-Null }
 
-# Clean old logs
-Get-ChildItem (Join-Path $resultsDir "*.log") -ErrorAction SilentlyContinue | Remove-Item -Force
+# Start session logging via transcript
+try { Stop-Transcript -ErrorAction SilentlyContinue } catch {}
+Start-Transcript -Path $sessionLog -Force | Out-Null
 
 $version = if (Test-Path "VERSION") { (Get-Content "VERSION" -Raw).Trim() } else { "unknown" }
 $commit = & git rev-parse --short HEAD 2>$null; if (-not $commit) { $commit = "unknown" }
 $branch = & git branch --show-current 2>$null; if (-not $branch) { $branch = "unknown" }
 $date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $machine = $env:COMPUTERNAME
+
+Write-Host "SPDF Check — $version ($commit) on $machine" -ForegroundColor Cyan
+Write-Host "Started: $date" -ForegroundColor DarkGray
+Write-Host ""
 
 # --- Step runner ---
 
@@ -69,6 +79,13 @@ function Run-Step {
         ExitCode = $exitCode
         Output   = $output
     }
+}
+
+# Helper: strip ANSI escape codes from a string
+function Strip-Ansi {
+    param([string]$Text)
+    $pattern = "$ESC\[[0-9;]*[A-Za-z]"
+    return [regex]::Replace($Text, $pattern, "")
 }
 
 # --- Rust checks ---
@@ -155,7 +172,7 @@ $failCount = $failedSteps.Count
 $skipCount = $skippedSteps.Count
 $totalCount = $steps.Count
 $allPass = ($failCount -eq 0)
-$overallStatus = if ($allPass) { "ALL PASS" } else { "FAILING" }
+if ($allPass) { $overallStatus = "ALL PASS" } else { $overallStatus = "FAILING" }
 
 $lines = [System.Collections.ArrayList]::new()
 $null = $lines.Add("# CHECK RESULTS")
@@ -181,7 +198,12 @@ $null = $lines.Add("|---|---------|------|--------|")
 $stepNum = 0
 foreach ($step in $steps) {
     $stepNum++
-    $icon = switch ($step.Status) { "PASS" { "PASS" } "FAIL" { "**FAIL**" } "SKIP" { "SKIP" } }
+    switch ($step.Status) {
+        "PASS" { $icon = "PASS" }
+        "FAIL" { $icon = "**FAIL**" }
+        "SKIP" { $icon = "SKIP" }
+        default { $icon = $step.Status }
+    }
     $null = $lines.Add("| $stepNum | $($step.Section) | ${bt}$($step.Name)${bt} | $icon |")
 }
 
@@ -196,33 +218,24 @@ $null = $lines.Add("---")
 $null = $lines.Add("")
 $null = $lines.Add("## Rust Test Breakdown")
 
+$rustTotalPassed = 0
+$rustTotalFailed = 0
+
 if ($cargoTestStep -and $cargoTestStep.Output) {
     $cargoOutput = $cargoTestStep.Output -split "\r?\n"
 
-    # Parse: "Running unittests src/lib.rs (target\debug\deps\spdf_core-xxx)"
-    # Followed by test lines, then "test result: ok. N passed; ..."
     $rustModules = [System.Collections.ArrayList]::new()
     $currentCrate = ""
-    $rustTotalPassed = 0
-    $rustTotalFailed = 0
     $rustWarnings = [System.Collections.ArrayList]::new()
 
     foreach ($rline in $cargoOutput) {
-        # Detect crate being compiled/tested
+        # Detect crate being tested
         if ($rline -match "Running\s+(unittests\s+)?(.+?)\s+\(") {
             $currentCrate = $Matches[2]
-            # Clean up: extract just the source file path
-            if ($currentCrate -match "([^/\\]+)\.rs$") {
-                # keep as-is
-            }
         }
         # Detect doc-tests
         if ($rline -match "Doc-tests\s+(\S+)") {
             $currentCrate = "doc-tests/$($Matches[1])"
-        }
-        # Detect "Compiling" to get crate names
-        if ($rline -match "^\s*Compiling\s+(\S+)\s+v") {
-            # just informational, skip
         }
         # Parse test result lines
         if ($rline -match "test result: ok\.\s+(\d+) passed;\s+(\d+) failed;") {
@@ -263,7 +276,7 @@ if ($cargoTestStep -and $cargoTestStep.Output) {
         $null = $lines.Add("| Module | Passed | Failed |")
         $null = $lines.Add("|--------|--------|--------|")
         foreach ($mod in $rustModules) {
-            $failStr = if ($mod.Failed -gt 0) { "**$($mod.Failed)**" } else { "0" }
+            if ($mod.Failed -gt 0) { $failStr = "**$($mod.Failed)**" } else { $failStr = "0" }
             $null = $lines.Add("| ${bt}$($mod.Source)${bt} | $($mod.Passed) | $failStr |")
         }
         $null = $lines.Add("| **Total** | **$rustTotalPassed** | **$rustTotalFailed** |")
@@ -299,19 +312,19 @@ $null = $lines.Add("---")
 $null = $lines.Add("")
 $null = $lines.Add("## Python Test Breakdown")
 
+$pyTotalPassed = 0
+$pyTotalFailed = 0
+$pyTotalSkipped = 0
+
 if ($pytestStep -and $pytestStep.Output) {
     $pyOutput = $pytestStep.Output -split "\r?\n"
 
-    # Parse pytest -v output lines like: "api/tests/test_documents.py::test_name PASSED"
     $pyModuleCounts = [ordered]@{}
-    $pyTotalPassed = 0
-    $pyTotalFailed = 0
-    $pyTotalSkipped = 0
     $pyWarnings = [System.Collections.ArrayList]::new()
     $inWarnings = $false
 
     foreach ($pline in $pyOutput) {
-        # Match pytest verbose result lines
+        # Match pytest verbose result lines (forward slash paths)
         if ($pline -match "^(api/tests/\S+\.py)::\S+\s+(PASSED|FAILED|SKIPPED|ERROR|XFAIL|XPASS)") {
             $module = $Matches[1]
             $result = $Matches[2]
@@ -366,8 +379,8 @@ if ($pytestStep -and $pytestStep.Output) {
         foreach ($modKey in $pyModuleCounts.Keys) {
             $mc = $pyModuleCounts[$modKey]
             $modName = $modKey -replace "^api/tests/", ""
-            $failStr = if ($mc.Failed -gt 0) { "**$($mc.Failed)**" } else { "0" }
-            $skipStr = if ($mc.Skipped -gt 0) { "$($mc.Skipped)" } else { "0" }
+            if ($mc.Failed -gt 0) { $failStr = "**$($mc.Failed)**" } else { $failStr = "0" }
+            if ($mc.Skipped -gt 0) { $skipStr = "$($mc.Skipped)" } else { $skipStr = "0" }
             $null = $lines.Add("| ${bt}$modName${bt} | $($mc.Passed) | $failStr | $skipStr |")
         }
         $null = $lines.Add("| **Total** | **$pyTotalPassed** | **$pyTotalFailed** | **$pyTotalSkipped** |")
@@ -414,29 +427,38 @@ $null = $lines.Add("## Studio Test Breakdown")
 
 if ($vitestStep -and $vitestStep.Output) {
     # Strip ANSI escape codes before parsing
-    $cleanOutput = $vitestStep.Output -replace '\x1B\[[0-9;]*[A-Za-z]', ''
+    $cleanOutput = Strip-Ansi $vitestStep.Output
     $vitestOutput = $cleanOutput -split "\r?\n"
 
-    # Parse vitest output: "Tests  42 passed (42)"  or "Tests  3 failed | 39 passed (42)"
+    # Parse vitest summary: "Tests  70 passed (70)" or "Tests  1 failed | 69 passed (70)"
     foreach ($vline in $vitestOutput) {
         if ($vline -match "Tests\s+.*?(\d+)\s+passed") {
             $studioTotalPassed = [int]$Matches[1]
         }
-        if ($vline -match "(\d+)\s+failed") {
+        if ($vline -match "Tests\s+.*?(\d+)\s+failed") {
             $studioTotalFailed = [int]$Matches[1]
         }
     }
 
-    # Parse per-file results: " PASS  src/__tests__/App.test.tsx (5 tests)"
-    # Also matches vitest checkmark format: " ✓ src/__tests__/App.test.tsx (5 tests)"
+    # Parse per-file results after ANSI stripping
+    # Vitest formats: " ✓ src/__tests__/App.test.tsx (5 tests) 42ms"
+    #                 " × src/__tests__/App.test.tsx (5 tests) 42ms"
+    #                 " PASS  src/__tests__/App.test.tsx (5 tests)"
     $studioFiles = [System.Collections.ArrayList]::new()
     foreach ($vline in $vitestOutput) {
-        if ($vline -match "(PASS|FAIL|✓|×)\s+(\S+\.test\.\S+)\s*\(?(\d+)\s+test") {
-            $fStatus = if ($Matches[1] -eq "FAIL" -or $Matches[1] -eq "×") { "FAIL" } else { "PASS" }
+        if ($vline -match "\s+(\S+\.test\.\S+)\s+\((\d+)\s+test") {
+            $fName = $Matches[1]
+            $fCount = [int]$Matches[2]
+            # Determine pass/fail from line content
+            if ($vline -match "FAIL|x ") {
+                $fStatus = "FAIL"
+            } else {
+                $fStatus = "PASS"
+            }
             $null = $studioFiles.Add(@{
                 Status = $fStatus
-                File   = $Matches[2]
-                Count  = [int]$Matches[3]
+                File   = $fName
+                Count  = $fCount
             })
         }
     }
@@ -446,8 +468,8 @@ if ($vitestStep -and $vitestStep.Output) {
         $null = $lines.Add("| File | Tests | Result |")
         $null = $lines.Add("|------|-------|--------|")
         foreach ($sf in $studioFiles) {
-            $icon = if ($sf.Status -eq "PASS") { "PASS" } else { "**FAIL**" }
-            $null = $lines.Add("| ${bt}$($sf.File)${bt} | $($sf.Count) | $icon |")
+            if ($sf.Status -eq "PASS") { $sfIcon = "PASS" } else { $sfIcon = "**FAIL**" }
+            $null = $lines.Add("| ${bt}$($sf.File)${bt} | $($sf.Count) | $sfIcon |")
         }
         $null = $lines.Add("| **Total** | **$($studioTotalPassed + $studioTotalFailed)** | |")
     } else {
@@ -533,9 +555,13 @@ if ($allPass) {
     Write-Host "  Tests: $grandPassed passed, $grandFailed failed, $grandSkipped skipped ($grandTotal total)" -ForegroundColor Red
 }
 Write-Host "  Report: $reportFile" -ForegroundColor White
+Write-Host "  Session log: $sessionLog" -ForegroundColor White
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor White
 Write-Host "  git add .build-results" -ForegroundColor Yellow
 Write-Host "  git commit -m 'check: $version'" -ForegroundColor Yellow
 Write-Host "  git push" -ForegroundColor Yellow
+
+# Stop transcript
+Stop-Transcript | Out-Null
