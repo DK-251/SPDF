@@ -3,12 +3,12 @@
 ## Run Info
 | Field | Value |
 |-------|-------|
-| Version | 0.1.0-snapshot.13 |
-| Commit | `eaecbe0` |
+| Version | 0.1.0-snapshot.14 |
+| Commit | `1071a72` |
 | Branch | main |
-| Date | 2026-03-26T07:35:29Z |
+| Date | 2026-03-26T10:32:07Z |
 | Machine | TUF_WARRIOR_DK |
-| Overall | **ALL PASS** (6 pass, 0 fail, 0 skip / 6 steps) |
+| Overall | **FAILING** (6 pass, 3 fail, 0 skip / 9 steps) |
 
 ## Steps
 
@@ -20,6 +20,9 @@
 | 4 | Python | `pip install api[dev]` | PASS |
 | 5 | Python | `maturin develop` | PASS |
 | 6 | Python | `pytest` | PASS |
+| 7 | Studio | `npm ci` | **FAIL** |
+| 8 | Studio | `vitest` | **FAIL** |
+| 9 | Studio | `vite build` | **FAIL** |
 
 ---
 
@@ -87,7 +90,13 @@ D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKey
 return self._jws.encode(
 ```
 
-**Summary:** `====================== 157 passed, 18 warnings in 5.85s =======================`
+**Summary:** `====================== 157 passed, 18 warnings in 9.38s =======================`
+
+---
+
+## Studio Test Breakdown
+
+*Vitest: 0 passed, 0 failed*
 
 ---
 
@@ -97,4 +106,39 @@ return self._jws.encode(
 |--|--------|--------|---------|-------|
 | Rust | 140 | 0 | 0 | 140 |
 | Python | 157 | 0 | 0 | 157 |
+| Studio | 0 | 0 | 0 | 0 |
 | **Total** | **297** | **0** | **0** | **297** |
+
+---
+
+## Failure Details
+
+### Studio: npm ci
+Exit code: 1
+
+```text
+At line:1 char:41
++ cd studio; npm ci --prefer-offline 2>&1 2>&1
++                                         ~~~~
+The error stream for this command is already redirected.
+```
+
+### Studio: vitest
+Exit code: 1
+
+```text
+At line:1 char:32
++ cd studio; npx vitest run 2>&1 2>&1
++                                ~~~~
+The error stream for this command is already redirected.
+```
+
+### Studio: vite build
+Exit code: 1
+
+```text
+At line:1 char:32
++ cd studio; npx vite build 2>&1 2>&1
++                                ~~~~
+The error stream for this command is already redirected.
+```
