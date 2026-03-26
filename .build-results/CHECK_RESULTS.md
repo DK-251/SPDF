@@ -1,12 +1,12 @@
-﻿# CHECK RESULTS
+# CHECK RESULTS
 
 ## Run Info
 | Field | Value |
 |-------|-------|
 | Version | 0.1.0-snapshot.14 |
-| Commit | `7c354b0` |
+| Commit | `12990be` |
 | Branch | main |
-| Date | 2026-03-26T11:24:14Z |
+| Date | 2026-03-26T14:18:43Z |
 | Machine | TUF_WARRIOR_DK |
 | Overall | **ALL PASS** (9 pass, 0 fail, 0 skip / 9 steps) |
 
@@ -90,15 +90,29 @@ D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKey
 return self._jws.encode(
 ```
 
-**Summary:** `====================== 157 passed, 18 warnings in 5.78s =======================`
+**Summary:** `====================== 157 passed, 18 warnings in 9.14s =======================`
 
 ---
 
 ## Studio Test Breakdown
 
-*Vitest: 0 passed, 0 failed*
+| File | Tests | Result |
+|------|-------|--------|
+| `src/__tests__/document-store.test.ts` | 9 | PASS |
+| `src/__tests__/api-client.test.ts` | 11 | PASS |
+| `src/__tests__/ElementTree.test.tsx` | 6 | PASS |
+| `src/__tests__/UploadZone.test.tsx` | 6 | PASS |
+| `src/__tests__/GenerateForm.test.tsx` | 4 | PASS |
+| `src/__tests__/Templates.test.tsx` | 5 | PASS |
+| `src/__tests__/ApiKeyCard.test.tsx` | 6 | PASS |
+| `src/__tests__/DocumentCard.test.tsx` | 5 | PASS |
+| `src/__tests__/Dashboard.test.tsx` | 6 | PASS |
+| `src/__tests__/Shell.test.tsx` | 4 | PASS |
+| `src/__tests__/App.test.tsx` | 4 | PASS |
+| `src/__tests__/auth-store.test.ts` | 4 | PASS |
+| **Total** | **70** | |
 
-**Summary:** `[2m   Duration [22m 4.09s[2m (transform 1.19s, setup 3.10s, collect 8.25s, tests 2.12s, environment 15.88s, prepare 6.89s)[22m`
+**Summary:** `Duration  7.59s (transform 1.83s, setup 4.64s, collect 14.00s, tests 4.46s, environment 27.83s, prepare 11.42s)`
 
 ---
 
@@ -108,5 +122,5 @@ return self._jws.encode(
 |--|--------|--------|---------|-------|
 | Rust | 140 | 0 | 0 | 140 |
 | Python | 157 | 0 | 0 | 157 |
-| Studio | 0 | 0 | 0 | 0 |
-| **Total** | **297** | **0** | **0** | **297** |
+| Studio | 70 | 0 | 0 | 70 |
+| **Total** | **367** | **0** | **0** | **367** |
