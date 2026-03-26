@@ -16,6 +16,7 @@ from starlette.responses import Response
 
 from app.errors import RATE_LIMIT_EXCEEDED, UNAUTHORIZED
 from app.services.api_keys import verify_api_key
+from app.services.jwt_auth import decode_jwt
 from app.services.stores import (
     ENDPOINT_FAMILIES,
     PUBLIC_PATHS,
@@ -63,24 +64,35 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if path in PUBLIC_PATHS:
             return await call_next(request)
 
-        # --- Authentication ---
+        # --- Authentication (API key OR JWT) ---
         auth_header = request.headers.get("authorization", "")
         if not auth_header.startswith("Bearer "):
             return _error_response(401, UNAUTHORIZED, "Missing or malformed Authorization header.")
 
-        api_key = auth_header[7:]  # strip "Bearer "
-        if not api_key:
-            return _error_response(401, UNAUTHORIZED, "API key is empty.")
+        token = auth_header[7:]  # strip "Bearer "
+        if not token:
+            return _error_response(401, UNAUTHORIZED, "Token is empty.")
 
-        # Find user by trying all users' key hashes
         user = None
-        for u in user_store.iter_users():
-            if u["api_key_hash"] and verify_api_key(api_key, u["api_key_hash"]):
-                user = u
-                break
+
+        if token.startswith("sk_"):
+            # API key authentication
+            for u in user_store.iter_users():
+                if u["api_key_hash"] and verify_api_key(token, u["api_key_hash"]):
+                    user = u
+                    break
+        elif token.startswith("eyJ"):
+            # JWT authentication
+            try:
+                claims = decode_jwt(token)
+                email = claims.get("sub", "")
+                if email:
+                    user = user_store.find_by_email(email)
+            except Exception:
+                return _error_response(401, UNAUTHORIZED, "Invalid or expired JWT token.")
 
         if not user:
-            return _error_response(401, UNAUTHORIZED, "Invalid API key.")
+            return _error_response(401, UNAUTHORIZED, "Invalid credentials.")
 
         request.state.user = user
         user_store.touch_last_used(user["id"])

@@ -54,4 +54,5 @@ def seed_test_user() -> None:
         tier="FREE",
         api_key_hash=key_hash,
         api_key_prefix=TEST_API_KEY_PREFIX,
+        email="test@spdf.dev",
     )

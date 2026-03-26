@@ -12,8 +12,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.api_keys import TEST_API_KEY, seed_test_user
+from app.services.api_keys import TEST_API_KEY, TEST_USER_ID, seed_test_user
+from app.services.jwt_auth import TEST_JWT_ISSUER, TEST_JWT_SECRET, create_test_token
 from app.services.stores import rate_limit_store, user_store
+from app.services.subscriptions import subscription_store
+from app.services.templates import template_store
 
 
 def _eid() -> str:
@@ -37,10 +40,14 @@ def engine_available() -> bool:
 
 
 @pytest.fixture(autouse=True)
-def _reset_stores() -> None:
-    """Reset in-memory stores and re-seed the test user before each test."""
+def _reset_stores(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reset in-memory stores, configure test JWT, and re-seed the test user."""
     user_store.reset()
     rate_limit_store.reset()
+    subscription_store.reset()
+    template_store.reset()
+    monkeypatch.setattr("app.services.jwt_auth.JWT_SECRET", TEST_JWT_SECRET)
+    monkeypatch.setattr("app.services.jwt_auth.JWT_ISSUER", TEST_JWT_ISSUER)
     seed_test_user()
 
 
@@ -60,6 +67,24 @@ def client(auth_headers: dict[str, str]) -> TestClient:
 def raw_client() -> TestClient:
     """TestClient without auth headers (for testing auth failures)."""
     return TestClient(app)
+
+
+@pytest.fixture()
+def jwt_token() -> str:
+    """A valid JWT token for the test user."""
+    return create_test_token("test@spdf.dev")
+
+
+@pytest.fixture()
+def jwt_headers(jwt_token: str) -> dict[str, str]:
+    """Authorization header with a valid JWT token."""
+    return {"Authorization": f"Bearer {jwt_token}"}
+
+
+@pytest.fixture()
+def jwt_client(jwt_headers: dict[str, str]) -> TestClient:
+    """TestClient authenticated via JWT."""
+    return TestClient(app, headers=jwt_headers)
 
 
 @pytest.fixture()

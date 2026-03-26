@@ -96,3 +96,56 @@ class UsageResponse(BaseModel):
     usage: dict[str, int] = Field(default_factory=dict)
     limits: dict[str, int] = Field(default_factory=dict)
     next_reset_at: str
+
+
+# --- Billing ---
+
+
+class SubscriptionResponse(BaseModel):
+    plan: str
+    status: str
+    current_period_start: str | None = None
+    current_period_end: str | None = None
+    created_at: str | None = None
+
+
+class CheckoutRequest(BaseModel):
+    plan: str
+
+
+class CheckoutResponse(BaseModel):
+    checkout_url: str
+
+
+class PortalResponse(BaseModel):
+    portal_url: str
+
+
+# --- Templates ---
+
+
+class TemplateCreate(BaseModel):
+    name: str
+    description: str = ""
+    semantic_template: dict[str, Any] = Field(default_factory=dict)
+
+
+class TemplateUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    semantic_template: dict[str, Any] | None = None
+
+
+class TemplateResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    semantic_template: dict[str, Any]
+    created_at: str
+    updated_at: str
+
+
+class TemplateListResponse(BaseModel):
+    items: list[TemplateResponse]
+    next_cursor: str | None = None
+    has_more: bool = False

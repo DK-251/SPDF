@@ -10,6 +10,28 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.8] - 2026-03-26
+
+### Added
+- **JWT auth** (`api/app/services/jwt_auth.py`): Dual authentication -- API key (`sk_...`) or JWT (`eyJ...`) tokens, configurable secret/issuer via env vars, ready for Clerk
+- **Subscription management** (`api/app/services/subscriptions.py`): In-memory SubscriptionStore with lifecycle (create, update, cancel), tier enforcement
+- **Billing endpoints** (`api/app/routers/billing.py`): GET subscription, POST checkout (stub), POST portal (stub)
+- **Stripe webhook handler** (`api/app/routers/webhooks.py`): Processes subscription and invoice events, updates tiers, public endpoint with sig verification
+- **Template system** (`api/app/routers/templates.py`): CRUD with cursor-based pagination (ADR-008), 5 endpoints, soft-delete
+- **E2E integration tests** (`api/tests/test_e2e.py`): 8 multi-step flow tests
+- 60 new Python tests across 5 test files (jwt_auth, billing, webhooks, templates, e2e)
+- `PyJWT>=2.8.0` dependency
+
+### Changed
+- Middleware supports dual auth: `sk_` prefix -> API key, `eyJ` prefix -> JWT
+- UserStore: added `email` field, `find_by_email()`, `update_tier()` methods
+- Conftest: JWT fixtures, subscription/template store resets
+
+### Build Target
+- [ ] just check -- pending TUF verification
+
+---
+
 ## [0.1.0-snapshot.7] - 2026-03-26
 
 ### Added

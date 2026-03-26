@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.7
+- **Version:** 0.1.0-snapshot.8
 - **Phase:** 2 — Backend API
-- **Status:** Week 3 complete — all checks green (93 Rust + 61 Python tests), `just check` fully operational
+- **Status:** Week 4 in progress — JWT auth, billing, webhooks, templates implemented, pending TUF verification
 
 ---
 
@@ -49,10 +49,10 @@
 
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
-| 16 | Clerk JWT auth | TODO | — | |
-| 17 | Redis rate limiting | TODO | — | |
-| 18 | Stripe webhooks | TODO | — | |
-| 19-20 | Templates + E2E test | TODO | — | |
+| 16 | JWT auth (dual: API key + JWT) | DONE | 0.1.0-s.8 | PyJWT, configurable secret/issuer, 12 tests |
+| 17 | Subscription mgmt + billing endpoints | DONE | 0.1.0-s.8 | In-memory SubscriptionStore, 3 billing endpoints, 12 tests |
+| 18 | Stripe webhook handler | DONE | 0.1.0-s.8 | Event dispatch, tier mutations, sig verify stub, 11 tests |
+| 19-20 | Templates + E2E tests | DONE | 0.1.0-s.8 | CRUD with cursor pagination, 17 template + 8 E2E tests |
 
 ### Week 5: Advanced Features
 

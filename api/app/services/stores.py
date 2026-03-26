@@ -40,10 +40,13 @@ ENDPOINT_FAMILIES: dict[str, str] = {
     "/api/v1/documents/validate": "other",
     "/api/v1/documents/render": "other",
     "/api/v1/documents/parse": "other",
+    "/api/v1/billing/checkout": "other",
+    "/api/v1/billing/portal": "other",
+    "/api/v1/billing/subscription": "other",
 }
 
 # Paths that bypass auth and rate limiting entirely
-PUBLIC_PATHS: set[str] = {"/api/v1/health"}
+PUBLIC_PATHS: set[str] = {"/api/v1/health", "/api/v1/webhooks/stripe"}
 
 
 def _today_utc() -> str:
@@ -63,11 +66,13 @@ class UserStore:
         tier: str = "FREE",
         api_key_hash: str = "",
         api_key_prefix: str = "",
+        email: str = "",
     ) -> dict:
         now = datetime.now(timezone.utc).isoformat()
         user = {
             "id": user_id,
             "tier": tier,
+            "email": email,
             "api_key_hash": api_key_hash,
             "api_key_prefix": api_key_prefix,
             "api_key_created_at": now,
@@ -87,6 +92,17 @@ class UserStore:
         if uid:
             return self._users.get(uid)
         return None
+
+    def find_by_email(self, email: str) -> dict | None:
+        for u in self._users.values():
+            if u.get("email") == email:
+                return u
+        return None
+
+    def update_tier(self, user_id: str, tier: str) -> None:
+        user = self._users.get(user_id)
+        if user:
+            user["tier"] = tier
 
     def iter_users(self) -> list[dict]:
         return list(self._users.values())
