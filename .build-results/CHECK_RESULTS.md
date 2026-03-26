@@ -1,48 +1,92 @@
 ﻿# CHECK RESULTS
 
 ## Run Info
-- **Version:** 0.1.0-snapshot.8
-- **Commit:** 70fe7b9
-- **Branch:** main
-- **Date:** 2026-03-26T05:56:35Z
-- **Machine:** TUF_WARRIOR_DK
-- **Overall:** ALL PASS (6 pass, 0 fail, 0 skip / 6 total)
+| Field | Value |
+|-------|-------|
+| Version | 0.1.0-snapshot.8 |
+| Commit | `a82cab5` |
+| Branch | main |
+| Date | 2026-03-26T06:09:29Z |
+| Machine | TUF_WARRIOR_DK |
+| Overall | **ALL PASS** (6 pass, 0 fail, 0 skip / 6 steps) |
 
 ## Steps
 
-### Rust
-- [x] `cargo fmt --check`: **PASS**
-- [x] `cargo clippy`: **PASS**
-- [x] `cargo test`: **PASS**
-
-### Python
-- [x] `pip install api[dev]`: **PASS**
-- [x] `maturin develop`: **PASS**
-- [x] `pytest`: **PASS**
-
----
-
-All checks passed. No errors to report.
+| # | Section | Step | Result |
+|---|---------|------|--------|
+| 1 | Rust | `cargo fmt --check` | PASS |
+| 2 | Rust | `cargo clippy` | PASS |
+| 3 | Rust | `cargo test` | PASS |
+| 4 | Python | `pip install api[dev]` | PASS |
+| 5 | Python | `maturin develop` | PASS |
+| 6 | Python | `pytest` | PASS |
 
 ---
 
-## Test Summary
+## Rust Test Breakdown
 
-### Rust
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s`
-- `test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s`
-- `test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
+| Module | Passed | Failed |
+|--------|--------|--------|
+| `tests\container_tests.rs` | 14 | 0 |
+| `tests\dom_tests.rs` | 31 | 0 |
+| `tests\binding_logic_tests.rs` | 20 | 0 |
+| `tests\integration_test.rs` | 3 | 0 |
+| `tests\validator_tests.rs` | 25 | 0 |
+| **Total** | **93** | **0** |
 
-### Python
-- `====================== 116 passed, 18 warnings in 8.68s =======================`
+---
+
+## Python Test Breakdown
+
+| Module | Passed | Failed | Skipped |
+|--------|--------|--------|---------|
+| `test_account.py` | 16 | 0 | 0 |
+| `test_billing.py` | 11 | 0 | 0 |
+| `test_documents.py` | 32 | 0 | 0 |
+| `test_e2e.py` | 8 | 0 | 0 |
+| `test_jwt_auth.py` | 11 | 0 | 0 |
+| `test_rate_limit.py` | 13 | 0 | 0 |
+| `test_templates.py` | 15 | 0 | 0 |
+| `test_webhooks.py` | 10 | 0 | 0 |
+| **Total** | **116** | **0** | **0** |
+
+### Python Warnings (24)
+
+```text
+tests/test_e2e.py::test_jwt_auth_template_crud
+tests/test_jwt_auth.py::test_jwt_auth_returns_200
+tests/test_jwt_auth.py::test_jwt_auth_resolves_correct_user
+tests/test_jwt_auth.py::test_jwt_auth_rate_limit_headers
+tests/test_jwt_auth.py::test_both_auth_methods_on_same_endpoint
+tests/test_jwt_auth.py::test_expired_jwt_returns_401
+tests/test_jwt_auth.py::test_unknown_email_returns_401
+tests/test_jwt_auth.py::test_wrong_issuer_returns_401
+D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 20 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+return self._jws.encode(
+tests/test_e2e.py::test_jwt_auth_template_crud
+tests/test_jwt_auth.py::test_jwt_auth_returns_200
+tests/test_jwt_auth.py::test_jwt_auth_resolves_correct_user
+tests/test_jwt_auth.py::test_jwt_auth_rate_limit_headers
+tests/test_jwt_auth.py::test_both_auth_methods_on_same_endpoint
+tests/test_jwt_auth.py::test_expired_jwt_returns_401
+tests/test_jwt_auth.py::test_bad_signature_returns_401
+tests/test_jwt_auth.py::test_unknown_email_returns_401
+tests/test_jwt_auth.py::test_wrong_issuer_returns_401
+D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 20 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+decoded = self.decode_complete(
+tests/test_jwt_auth.py::test_bad_signature_returns_401
+D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 12 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+return self._jws.encode(
+```
+
+**Summary:** `====================== 116 passed, 18 warnings in 7.78s =======================`
+
+---
+
+## Grand Total
+
+| | Passed | Failed | Skipped | Total |
+|--|--------|--------|---------|-------|
+| Rust | 93 | 0 | 0 | 93 |
+| Python | 116 | 0 | 0 | 116 |
+| **Total** | **209** | **0** | **0** | **209** |
