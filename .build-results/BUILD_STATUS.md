@@ -1,9 +1,9 @@
 ﻿# Build Status
 
 ## Last Run
-- **Version:** 0.1.0-snapshot.6
-- **Date:** 2026-03-25T18:07:53Z
-- **Commit:** f5d1dfa
+- **Version:** 0.1.0-snapshot.13
+- **Date:** 2026-03-26T07:16:44Z
+- **Commit:** 9db24da
 - **Branch:** main
 - **Machine:** TUF_WARRIOR_DK
 
@@ -23,11 +23,9 @@
 
 ## Error Logs
 ### python-install.log
-```n  Preparing editable metadata (pyproject.toml): finished with status 'done'
-Requirement already satisfied: fastapi>=0.115.0 in d:\tools\lib\site-packages (from spdf-api==0.1.0) (0.135.2)
-Requirement already satisfied: uvicorn>=0.32.0 in d:\tools\lib\site-packages (from uvicorn[standard]>=0.32.0->spdf-api==0.1.0) (0.42.0)
-Requirement already satisfied: python-multipart>=0.0.18 in d:\tools\lib\site-packages (from spdf-api==0.1.0) (0.0.22)
-Requirement already satisfied: pydantic>=2.10.0 in d:\tools\lib\site-packages (from spdf-api==0.1.0) (2.12.5)
+```n  Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata (10 kB)
+Collecting PyJWT>=2.8.0 (from spdf-api==0.1.0)
+  Using cached pyjwt-2.12.1-py3-none-any.whl.metadata (4.1 kB)
 Requirement already satisfied: pytest>=8.0 in d:\tools\lib\site-packages (from spdf-api==0.1.0) (9.0.2)
 Requirement already satisfied: httpx>=0.27.0 in d:\tools\lib\site-packages (from spdf-api==0.1.0) (0.28.1)
 Requirement already satisfied: starlette>=0.46.0 in d:\tools\lib\site-packages (from fastapi>=0.115.0->spdf-api==0.1.0) (1.0.0)
@@ -52,18 +50,20 @@ Requirement already satisfied: python-dotenv>=0.13 in d:\tools\lib\site-packages
 Requirement already satisfied: pyyaml>=5.1 in d:\tools\lib\site-packages (from uvicorn[standard]>=0.32.0->spdf-api==0.1.0) (6.0.3)
 Requirement already satisfied: watchfiles>=0.20 in d:\tools\lib\site-packages (from uvicorn[standard]>=0.32.0->spdf-api==0.1.0) (1.1.1)
 Requirement already satisfied: websockets>=10.4 in d:\tools\lib\site-packages (from uvicorn[standard]>=0.32.0->spdf-api==0.1.0) (16.0)
+Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl (150 kB)
+Using cached pyjwt-2.12.1-py3-none-any.whl (29 kB)
 Building wheels for collected packages: spdf-api
   Building editable for spdf-api (pyproject.toml): started
   Building editable for spdf-api (pyproject.toml): finished with status 'done'
-  Created wheel for spdf-api: filename=spdf_api-0.1.0-0.editable-py3-none-any.whl size=2814 sha256=4b8c4b19df1e45f4f5ec6293aa298ecce478c9a2d31204bb8b9cb46d266839da
-  Stored in directory: C:\Users\mrdee\AppData\Local\Temp\pip-ephem-wheel-cache-oxnyyr56\wheels\81\c1\f1\60acab9f8958ddc6729230800ba7ca79403af75240dad99d81
+  Created wheel for spdf-api: filename=spdf_api-0.1.0-0.editable-py3-none-any.whl size=2832 sha256=645dbe8e97203f32990318f834fe6a827a57594fe5e6cf0fea64eb26cec451ac
+  Stored in directory: C:\Users\mrdee\AppData\Local\Temp\pip-ephem-wheel-cache-ikzed5ao\wheels\81\c1\f1\60acab9f8958ddc6729230800ba7ca79403af75240dad99d81
 Successfully built spdf-api
-Installing collected packages: spdf-api
+Installing collected packages: PyJWT, bcrypt, spdf-api
   Attempting uninstall: spdf-api
     Found existing installation: spdf-api 0.1.0
     Uninstalling spdf-api-0.1.0:
       Successfully uninstalled spdf-api-0.1.0
-Successfully installed spdf-api-0.1.0
+Successfully installed PyJWT-2.12.1 bcrypt-5.0.0 spdf-api-0.1.0
 pip.exe : 
 At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
 +         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
@@ -85,9 +85,9 @@ At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
  
 api\tests\conftest.py:14: in <module>
     from app.main import app
-api\app\main.py:10: in <module>
-    from app.routers import documents
-api\app\routers\documents.py:17: in <module>
+api\app\main.py:14: in <module>
+    from app.routers import account, billing, documents, templates, webhooks
+api\app\routers\documents.py:23: in <module>
     from app.services.spdf_engine import SpdfEngine
 api\app\services\spdf_engine.py:12: in <module>
     import spdf_native
@@ -102,80 +102,126 @@ At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
     + CategoryInfo          : NotSpecified: (   Compiling pyo3-build-config v0.22.6:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-   Compiling pyo3-macros-backend v0.22.6
+warning: unused import: `crate::types::ElementId`
+  --> crates\spdf-core\src\diff.rs:10:5
+   |
+10 | use crate::types::ElementId;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `spdf-core` (lib) generated 1 warning (run `cargo fix --lib -p spdf-core` to apply 1 suggestion)
    Compiling pyo3-ffi v0.22.6
+   Compiling pyo3-macros-backend v0.22.6
    Compiling pyo3 v0.22.6
    Compiling pyo3-macros v0.22.6
    Compiling spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 9.56s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.54s
 ```
 
 ### rust-clippy.log
-```ncargo.exe :    Compiling pyo3-build-config v0.22.6
-At D:\SPDF DEVELOPMENT\SPDF\scripts\build-status.ps1:34 char:9
-+         & $args_list[0] $args_list[1..($args_list.Length-1)] *> $logP ...
-+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (   Compiling pyo3-build-config v0.22.6:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
+```n    Checking spdf-core v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-core)
+    Checking serde-wasm-bindgen v0.6.5
+error: unused import: `crate::types::ElementId`
+  --> crates\spdf-core\src\diff.rs:10:5
+   |
+10 | use crate::types::ElementId;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `-D unused-imports` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unused_imports)]`
+
    Compiling pyo3-macros-backend v0.22.6
    Compiling pyo3-ffi v0.22.6
    Compiling pyo3 v0.22.6
-   Compiling pyo3-macros v0.22.6
-    Checking spdf-python v0.1.0 (D:\SPDF DEVELOPMENT\SPDF\crates\spdf-python)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.77s
+error: the borrowed expression implements the required traits
+   --> crates\spdf-core\src\diff.rs:212:50
+    |
+212 |             old_value: Some(serde_json::to_value(&doc_a.direction).unwrap_or_default()),
+    |                                                  ^^^^^^^^^^^^^^^^ help: change this to: `doc_a.direction`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#needless_borrows_for_generic_args
+    = note: `-D clippy::needless-borrows-for-generic-args` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::needless_borrows_for_generic_args)]`
+
+error: the borrowed expression implements the required traits
+   --> crates\spdf-core\src\diff.rs:213:50
+    |
+213 |             new_value: Some(serde_json::to_value(&doc_b.direction).unwrap_or_default()),
+    |                                                  ^^^^^^^^^^^^^^^^ help: change this to: `doc_b.direction`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#needless_borrows_for_generic_args
+
+error: the borrowed expression implements the required traits
+   --> crates\spdf-core\src\diff.rs:223:50
+    |
+223 |             old_value: Some(serde_json::to_value(&doc_a.document_state).unwrap_or_default()),
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^ help: change this to: `doc_a.document_state`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#needless_borrows_for_generic_args
+
+error: the borrowed expression implements the required traits
+   --> crates\spdf-core\src\diff.rs:224:50
+    |
+224 |             new_value: Some(serde_json::to_value(&doc_b.document_state).unwrap_or_default()),
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^ help: change this to: `doc_b.document_state`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#needless_borrows_for_generic_args
+
+error: could not compile `spdf-core` (lib) due to 5 previous errors
+warning: build failed, waiting for other jobs to finish...
 ```
 
 ### rust-test.log
-```ntest e006_heading_level_zero ... ok
-test e008_table_row_cell_mismatch ... ok
-test e007_table_no_headers ... ok
-test e010_empty_payment_total ... ok
-test e011_redaction_empty_redacted_eid ... ok
-test e009_empty_invoice_number ... ok
-test e008_line_item_table_row_cell_mismatch ... ok
-test e012_select_without_options ... ok
-test f001_no_pages ... ok
-test e013_empty_variable_name ... ok
-test f002_empty_page ... ok
-test f004_empty_layer_checksum ... ok
-test f003_wrong_manifest_format ... ok
-test f005_empty_manifest_hash ... ok
-test report_counts ... ok
-test valid_document_passes ... ok
-test valid_manifest_passes ... ok
+```n
+running 11 tests
+test list_redactions_empty_on_clean_doc ... ok
+test redact_nonexistent_element_fails ... ok
+test verify_redaction_not_found ... ok
+test redact_element_succeeds ... ok
+test redact_preserves_other_elements ... ok
+test redacted_element_has_proof_hash ... ok
+test redacted_element_replaced_with_redaction ... ok
+test verify_redaction_found ... ok
+test list_redactions_shows_redacted_elements ... ok
+test redact_appends_audit_event ... ok
+test multiple_redactions ... ok
 
-test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
 
-     Running unittests src\lib.rs (target\debug\deps\spdf_wasm-4988da22b8988948.exe)
+     Running tests\signing_tests.rs (target\debug\deps\signing_tests-76c4fb2b310ba9dd.exe)
 
-running 0 tests
+running 15 tests
+test sign_draft_document_fails_wrong_state ... ok
+test transition_invalid_state_fails ... ok
+test signed_document_has_signature_entry ... ok
+test signature_record_has_correct_fields ... ok
+test sign_review_document_succeeds ... ok
+test transition_appends_audit_event ... ok
+test signed_document_state_is_signed ... ok
+test signed_document_locks_signature_blocks ... ok
+test sign_already_signed_fails ... ok
+test transition_draft_to_review ... ok
+test signed_document_has_audit_event ... ok
+test verify_reports_signer_details ... ok
+test verify_unsigned_document_reports_no_signatures ... ok
+test verify_signed_document_is_valid ... FAILED
+test verify_tampered_document_detects_tampering ... ok
 
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+failures:
 
-   Doc-tests spdf_core
+---- verify_signed_document_is_valid stdout ----
 
-running 0 tests
+thread 'verify_signed_document_is_valid' (5820) panicked at crates\spdf-core\tests\signing_tests.rs:199:5:
+assertion failed: report.valid
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-   Doc-tests spdf_renderer
+failures:
+    verify_signed_document_is_valid
 
-running 0 tests
+test result: FAILED. 14 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
 
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-   Doc-tests spdf_validator
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-   Doc-tests spdf_wasm
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
+error: test failed, to rerun pass `-p spdf-core --test signing_tests`
 ```
 
