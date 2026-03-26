@@ -1,4 +1,10 @@
-Usage: python -m uvicorn [OPTIONS] APP
-Try 'python -m uvicorn --help' for help.
-
-Error: Got unexpected extra argument (DEVELOPMENT\SPDF\api)
+INFO:     Will watch for changes in these directories: ['D:\\SPDF DEVELOPMENT\\SPDF']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [18316] using WatchFiles
+INFO:     Started server process [15328]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [15328]

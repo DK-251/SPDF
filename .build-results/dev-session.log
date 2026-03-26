@@ -1,12 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20260326195042
+Start time: 20260326203054
 Username: TUF_WARRIOR_DK\mrdee
 RunAs User: TUF_WARRIOR_DK\mrdee
 Configuration Name: 
 Machine: TUF_WARRIOR_DK (Microsoft Windows NT 10.0.26220.0)
 Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File scripts/dev.ps1
-Process ID: 19336
+Process ID: 21544
 PSVersion: 5.1.26100.7670
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7670
@@ -19,7 +19,7 @@ SerializationVersion: 1.1.0.1
 
 ========================================
   SPDF Dev Servers
-  Started: 2026-03-26 19:50:43
+  Started: 2026-03-26 20:30:54
 ========================================
 
   API:    http://localhost:8000
@@ -36,85 +36,51 @@ SerializationVersion: 1.1.0.1
 ========================================
 
 [API] Using python: D:\SPDF DEVELOPMENT\SPDF\.venv\Scripts\python.exe
-[API] Started PID 18176
-[Studio] Started PID 21996
+[API] Started PID 11228
+[Studio] Started PID 19240
 
 --- Tailing logs (Ctrl+C to stop) ---
 
-[API-err] Usage: python -m uvicorn [OPTIONS] APP
-[API-err] Try 'python -m uvicorn --help' for help.
-[API-err] Error: Got unexpected extra argument (DEVELOPMENT\SPDF\api)
+[API-err] INFO:     Will watch for changes in these directories: ['D:\\SPDF DEVELOPMENT\\SPDF']
+[API-err] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[API-err] INFO:     Started reloader process [18316] using WatchFiles
+[API-err] INFO:     Started server process [15328]
+[API-err] INFO:     Waiting for application startup.
+[API-err] INFO:     Application startup complete.
 [Studio] > spdf-studio@0.1.0 dev
 [Studio] > vite --port 5173
-[Studio]   [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m840[22m[2m[0m ms[22m
+[Studio]   [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m816[22m[2m[0m ms[22m
 [Studio]   [32mâžœ[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
 [Studio] [2m  [32mâžœ[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
 [Studio] [2m[32m  âžœ[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
-[API] EXITED with code
-[Studio-err] (node:22460) Warning: To load an ES module, set "type": "module" in the package.json or use the .mjs extension.
+[Studio-err] (node:22476) Warning: To load an ES module, set "type": "module" in the package.json or use the .mjs extension.
 [Studio-err] (Use `node --trace-warnings ...` to show where the warning was created)
-[Studio-err] [2m7:52:21 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/documents/generate[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:34 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/documents/generate[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:39 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/templates?limit=20[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:39 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/templates?limit=20[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:56 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/templates[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:56 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/templates[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:52:57 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/templates[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/account/api-key[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/account/usage[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/billing/subscription[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/account/api-key[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/account/usage[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
-[Studio-err] [2m7:53:03 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/billing/subscription[39m
-[Studio-err] AggregateError [ECONNREFUSED]:
-[Studio-err]     at internalConnectMultiple (node:net:1117:18)
-[Studio-err]     at afterConnectMultiple (node:net:1684:7)
+[API] INFO:     127.0.0.1:50360 - "POST /api/v1/documents/generate HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:65406 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:63089 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:63379 - "POST /api/v1/templates HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:54328 - "POST /api/v1/templates HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:57464 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:57721 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:62156 - "GET /api/v1/account/api-key HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:62158 - "GET /api/v1/account/usage HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:62160 - "GET /api/v1/billing/subscription HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:51744 - "GET /api/v1/account/api-key HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:50884 - "GET /api/v1/account/usage HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:50885 - "GET /api/v1/billing/subscription HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:56168 - "POST /api/v1/account/api-key/rotate HTTP/1.1" 401 Unauthorized
+[API] INFO:     127.0.0.1:60363 - "POST /api/v1/account/api-key/rotate HTTP/1.1" 401 Unauthorized
 PS>TerminatingError(): "The pipeline has been stopped."
 
 ========================================
   Stopping servers...
+  [API] Stopped
   [Studio] Stopped
 
-  Duration: 00:03:15
+  Duration: 00:02:12
   Logs saved to: D:\SPDF DEVELOPMENT\SPDF\.build-results
 ========================================
 **********************
 Windows PowerShell transcript end
-End time: 20260326195403
+End time: 20260326203309
 **********************

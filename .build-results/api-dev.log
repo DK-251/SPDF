@@ -1,0 +1,15 @@
+INFO:     127.0.0.1:50360 - "POST /api/v1/documents/generate HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65406 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:63089 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:63379 - "POST /api/v1/templates HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54328 - "POST /api/v1/templates HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57464 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57721 - "GET /api/v1/templates?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:62156 - "GET /api/v1/account/api-key HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:62158 - "GET /api/v1/account/usage HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:62160 - "GET /api/v1/billing/subscription HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51744 - "GET /api/v1/account/api-key HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50884 - "GET /api/v1/account/usage HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50885 - "GET /api/v1/billing/subscription HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56168 - "POST /api/v1/account/api-key/rotate HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60363 - "POST /api/v1/account/api-key/rotate HTTP/1.1" 401 Unauthorized

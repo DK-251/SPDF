@@ -4,9 +4,9 @@
 | Field | Value |
 |-------|-------|
 | Version | 0.1.0-snapshot.14 |
-| Commit | `12990be` |
+| Commit | `10c68d0` |
 | Branch | main |
-| Date | 2026-03-26T14:18:43Z |
+| Date | 2026-03-26T14:58:44Z |
 | Machine | TUF_WARRIOR_DK |
 | Overall | **ALL PASS** (9 pass, 0 fail, 0 skip / 9 steps) |
 
@@ -90,7 +90,7 @@ D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKey
 return self._jws.encode(
 ```
 
-**Summary:** `====================== 157 passed, 18 warnings in 9.14s =======================`
+**Summary:** `====================== 157 passed, 18 warnings in 9.38s =======================`
 
 ---
 
@@ -106,13 +106,13 @@ return self._jws.encode(
 | `src/__tests__/Templates.test.tsx` | 5 | PASS |
 | `src/__tests__/ApiKeyCard.test.tsx` | 6 | PASS |
 | `src/__tests__/DocumentCard.test.tsx` | 5 | PASS |
-| `src/__tests__/Dashboard.test.tsx` | 6 | PASS |
 | `src/__tests__/Shell.test.tsx` | 4 | PASS |
+| `src/__tests__/Dashboard.test.tsx` | 6 | PASS |
 | `src/__tests__/App.test.tsx` | 4 | PASS |
 | `src/__tests__/auth-store.test.ts` | 4 | PASS |
 | **Total** | **70** | |
 
-**Summary:** `Duration  7.59s (transform 1.83s, setup 4.64s, collect 14.00s, tests 4.46s, environment 27.83s, prepare 11.42s)`
+**Summary:** `Duration  8.59s (transform 2.54s, setup 6.04s, collect 15.63s, tests 4.38s, environment 33.78s, prepare 14.72s)`
 
 ---
 
