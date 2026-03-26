@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.13
-- **Phase:** 2 — Backend API
-- **Status:** Week 5 complete — signing, diff, redaction, API hardening, WASM bindings
+- **Version:** 0.1.0-snapshot.14
+- **Phase:** 3 — Studio Frontend
+- **Status:** Week 6 in progress — React app scaffold, layout, dashboard, all pages, tests
 
 ---
 
@@ -67,7 +67,16 @@
 ---
 
 ## Phase 3: Studio Frontend (Weeks 6–7)
-> Not started
+
+### Week 6: React App + Pages
+
+| Day | Task | Status | Snapshot | Notes |
+|-----|------|--------|----------|-------|
+| 31-32 | React scaffold + layout + dashboard | DONE | 0.1.0-s.14 | Vite + React 18 + TS + Tailwind + shadcn/ui, dark theme, app shell, auth gate |
+| 31-32 | All pages (Generate, Viewer, Templates, Settings) | DONE | 0.1.0-s.14 | JSON editor, PDF preview, element tree, property panel, CRUD templates |
+| 31-32 | API client + stores + hooks | DONE | 0.1.0-s.14 | Typed fetch wrapper, Zustand auth/document stores, useApi/useDocument hooks |
+| 31-32 | Studio tests | DONE | 0.1.0-s.14 | 13 test files: stores, API client, components, pages |
+| 31-32 | check.ps1 Studio section | DONE | 0.1.0-s.14 | npm ci + vitest + vite build, per-file breakdown, grand total includes Studio |
 
 ## Phase 4: SDKs (Weeks 8–9)
 > Not started

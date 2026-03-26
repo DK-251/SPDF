@@ -123,6 +123,27 @@ if ($hasPython -and (Test-Path "api")) {
     $null = $steps.Add(@{ Section="Python"; Name="python (not found)"; Status="SKIP"; ExitCode=0; Output="" })
 }
 
+# --- Studio checks ---
+
+$hasNode = Get-Command node -ErrorAction SilentlyContinue
+if ($hasNode -and (Test-Path "studio/package.json")) {
+    Write-Host ""
+    Write-Host "=== Studio ===" -ForegroundColor Cyan
+    $null = $steps.Add((Run-Step "Studio" "npm ci" "cd studio; npm ci --prefer-offline 2>&1"))
+    $null = $steps.Add((Run-Step "Studio" "vitest" "cd studio; npx vitest run 2>&1"))
+    $null = $steps.Add((Run-Step "Studio" "vite build" "cd studio; npx vite build 2>&1"))
+} else {
+    if (-not $hasNode) {
+        Write-Host ""
+        Write-Host "node not found -- skipping Studio checks" -ForegroundColor Yellow
+    }
+    if ($hasNode -and -not (Test-Path "studio/package.json")) {
+        Write-Host ""
+        Write-Host "studio/package.json not found -- skipping Studio checks" -ForegroundColor Yellow
+    }
+    $null = $steps.Add(@{ Section="Studio"; Name="node/studio (not found)"; Status="SKIP"; ExitCode=0; Output="" })
+}
+
 # --- Build report ---
 
 $failedSteps = @($steps | Where-Object { $_.Status -eq "FAIL" })
@@ -379,6 +400,69 @@ if ($pytestStep -and $pytestStep.Output) {
 }
 
 # ================================
+# Studio test breakdown
+# ================================
+
+$vitestStep = $steps | Where-Object { $_.Name -eq "vitest" } | Select-Object -First 1
+$studioTotalPassed = 0
+$studioTotalFailed = 0
+
+$null = $lines.Add("")
+$null = $lines.Add("---")
+$null = $lines.Add("")
+$null = $lines.Add("## Studio Test Breakdown")
+
+if ($vitestStep -and $vitestStep.Output) {
+    $vitestOutput = $vitestStep.Output -split "\r?\n"
+
+    # Parse vitest output: "Tests  42 passed (42)"  or "Tests  3 failed | 39 passed (42)"
+    foreach ($vline in $vitestOutput) {
+        if ($vline -match "Tests\s+(\d+)\s+passed") {
+            $studioTotalPassed = [int]$Matches[1]
+        }
+        if ($vline -match "(\d+)\s+failed") {
+            $studioTotalFailed = [int]$Matches[1]
+        }
+    }
+
+    # Parse per-file results: " PASS  src/__tests__/App.test.tsx (5 tests)"
+    $studioFiles = [System.Collections.ArrayList]::new()
+    foreach ($vline in $vitestOutput) {
+        if ($vline -match "(PASS|FAIL)\s+(\S+\.test\.\S+)\s*\((\d+)\s+test") {
+            $null = $studioFiles.Add(@{
+                Status = $Matches[1]
+                File   = $Matches[2]
+                Count  = [int]$Matches[3]
+            })
+        }
+    }
+
+    if ($studioFiles.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("| File | Tests | Result |")
+        $null = $lines.Add("|------|-------|--------|")
+        foreach ($sf in $studioFiles) {
+            $icon = if ($sf.Status -eq "PASS") { "PASS" } else { "**FAIL**" }
+            $null = $lines.Add("| ${bt}$($sf.File)${bt} | $($sf.Count) | $icon |")
+        }
+        $null = $lines.Add("| **Total** | **$($studioTotalPassed + $studioTotalFailed)** | |")
+    } else {
+        $null = $lines.Add("")
+        $null = $lines.Add("*Vitest: $studioTotalPassed passed, $studioTotalFailed failed*")
+    }
+
+    # Vitest summary line
+    $vitestSummary = $vitestOutput | Where-Object { $_ -match "Tests\s+\d+" } | Select-Object -Last 1
+    if ($vitestSummary) {
+        $null = $lines.Add("")
+        $null = $lines.Add("**Summary:** ${bt}$($vitestSummary.Trim())${bt}")
+    }
+} else {
+    $null = $lines.Add("")
+    $null = $lines.Add("*Studio tests were not run.*")
+}
+
+# ================================
 # Grand total
 # ================================
 
@@ -388,8 +472,8 @@ $null = $lines.Add("")
 $null = $lines.Add("## Grand Total")
 $null = $lines.Add("")
 
-$grandPassed = $rustTotalPassed + $pyTotalPassed
-$grandFailed = $rustTotalFailed + $pyTotalFailed
+$grandPassed = $rustTotalPassed + $pyTotalPassed + $studioTotalPassed
+$grandFailed = $rustTotalFailed + $pyTotalFailed + $studioTotalFailed
 $grandSkipped = $pyTotalSkipped
 $grandTotal = $grandPassed + $grandFailed + $grandSkipped
 
@@ -397,6 +481,7 @@ $null = $lines.Add("| | Passed | Failed | Skipped | Total |")
 $null = $lines.Add("|--|--------|--------|---------|-------|")
 $null = $lines.Add("| Rust | $rustTotalPassed | $rustTotalFailed | 0 | $($rustTotalPassed + $rustTotalFailed) |")
 $null = $lines.Add("| Python | $pyTotalPassed | $pyTotalFailed | $pyTotalSkipped | $($pyTotalPassed + $pyTotalFailed + $pyTotalSkipped) |")
+$null = $lines.Add("| Studio | $studioTotalPassed | $studioTotalFailed | 0 | $($studioTotalPassed + $studioTotalFailed) |")
 $null = $lines.Add("| **Total** | **$grandPassed** | **$grandFailed** | **$grandSkipped** | **$grandTotal** |")
 
 # --- Failure details ---

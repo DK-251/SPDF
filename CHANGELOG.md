@@ -10,6 +10,34 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.14] - 2026-03-26
+
+### Added
+- **Studio Frontend** (`studio/`): Complete React 18 + Vite + TypeScript application with dark-first premium UI
+  - Tailwind CSS + shadcn/ui component library (button, card, input, badge, dialog, skeleton, separator, textarea, tooltip)
+  - App shell with collapsible sidebar, header with API key indicator, auth gate
+  - **Dashboard page**: Document list with cards, drag-and-drop upload zone, state badges
+  - **Generate page**: JSON semantic editor with sample loader, document name input
+  - **Document Viewer**: Split-pane layout (PDF preview + element tree + property panel), document actions (sign, verify, download SPDF/PDF)
+  - **Templates page**: CRUD with cursor-based pagination, create/edit dialog
+  - **Settings page**: API key management (view prefix, rotate, disconnect), usage stats with progress bars, billing info
+  - **404 page**: Styled not-found with back navigation
+- **API client** (`studio/src/lib/api-client.ts`): Typed fetch wrapper covering all 20+ API endpoints with ApiError class
+- **Zustand stores**: `auth-store` (API key + localStorage persistence), `document-store` (in-memory document list with CRUD)
+- **Custom hooks**: `useApi` (generic loading/error state), `useDocument` (upload, generate, validate, verify, sign, render, download)
+- **Viewer components**: `PdfPreview` (iframe-based PDF display via render API), `ElementTree` (collapsible page/element tree with type icons), `PropertyPanel` (key-value field display), `DiffViewer` (side-by-side diff with impact badges)
+- **13 test files** with Vitest + React Testing Library: api-client, auth-store, document-store, App router, Shell layout, DocumentCard, UploadZone, ElementTree, GenerateForm, ApiKeyCard/Settings, Dashboard, Templates
+- **check.ps1 Studio section**: `npm ci` + `vitest run` + `vite build` steps with per-file test breakdown and grand total integration
+
+### Changed
+- `check.ps1` grand total now includes Studio (Rust + Python + Studio)
+- `PROGRESS.md` updated to Phase 3
+
+### Build Target
+- [ ] just check — pending TUF build (140 Rust + 157 Python + ~60 Studio tests expected)
+
+---
+
 ## [0.1.0-snapshot.13] - 2026-03-26
 
 ### Added
