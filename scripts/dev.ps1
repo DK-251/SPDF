@@ -54,7 +54,7 @@ Write-Host "[API] Using python: $python" -ForegroundColor Blue
 # Start API server (splatting avoids backtick line continuation)
 $apiArgs = @{
     FilePath = $python
-    ArgumentList = @("-m", "uvicorn", "app.main:app", "--reload", "--port", "8000", "--app-dir", (Join-Path $root "api"))
+    ArgumentList = "-m uvicorn app.main:app --reload --port 8000 --app-dir `"$(Join-Path $root 'api')`""
     RedirectStandardOutput = $apiLog
     RedirectStandardError = $apiErrLog
     PassThru = $true
