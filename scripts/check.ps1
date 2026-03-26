@@ -2,7 +2,7 @@
 # Usage: just check  (run on ASUS TUF after pull)
 #
 # Produces:
-#   .build-results/CHECK_RESULTS.md -- structured pass/fail with inline errors
+#   .build-results/CHECK_RESULTS.md -- structured pass/fail with per-module breakdown
 #
 # After running:
 #   git add .build-results && git commit -m "check: <version>" && git push
@@ -113,7 +113,8 @@ if ($hasPython -and (Test-Path "api")) {
         $null = $steps.Add(@{ Section="Python"; Name="maturin (not found)"; Status="SKIP"; ExitCode=0; Output="" })
     }
 
-    $null = $steps.Add((Run-Step "Python" "pytest" "python -m pytest api/tests/ -v --tb=short"))
+    # Run pytest with verbose + warnings summary
+    $null = $steps.Add((Run-Step "Python" "pytest" "python -m pytest api/tests/ -v --tb=short -W default::DeprecationWarning -W default::PendingDeprecationWarning"))
 } else {
     if (-not $hasPython) {
         Write-Host ""
@@ -139,25 +140,264 @@ $lines = [System.Collections.ArrayList]::new()
 $null = $lines.Add("# CHECK RESULTS")
 $null = $lines.Add("")
 $null = $lines.Add("## Run Info")
-$null = $lines.Add("- **Version:** $version")
-$null = $lines.Add("- **Commit:** $commit")
-$null = $lines.Add("- **Branch:** $branch")
-$null = $lines.Add("- **Date:** $date")
-$null = $lines.Add("- **Machine:** $machine")
-$null = $lines.Add("- **Overall:** $overallStatus ($passCount pass, $failCount fail, $skipCount skip / $totalCount total)")
+$null = $lines.Add("| Field | Value |")
+$null = $lines.Add("|-------|-------|")
+$null = $lines.Add("| Version | $version |")
+$null = $lines.Add("| Commit | ${bt}$commit${bt} |")
+$null = $lines.Add("| Branch | $branch |")
+$null = $lines.Add("| Date | $date |")
+$null = $lines.Add("| Machine | $machine |")
+$null = $lines.Add("| Overall | **$overallStatus** ($passCount pass, $failCount fail, $skipCount skip / $totalCount steps) |")
 $null = $lines.Add("")
-$null = $lines.Add("## Steps")
 
-$currentSection = ""
+# --- Steps table ---
+
+$null = $lines.Add("## Steps")
+$null = $lines.Add("")
+$null = $lines.Add("| # | Section | Step | Result |")
+$null = $lines.Add("|---|---------|------|--------|")
+
+$stepNum = 0
 foreach ($step in $steps) {
-    if ($step.Section -ne $currentSection) {
-        $null = $lines.Add("")
-        $null = $lines.Add("### $($step.Section)")
-        $currentSection = $step.Section
-    }
-    $icon = switch ($step.Status) { "PASS" { "[x]" } "FAIL" { "[ ]" } "SKIP" { "[-]" } }
-    $null = $lines.Add("- $icon ${bt}$($step.Name)${bt}: **$($step.Status)**")
+    $stepNum++
+    $icon = switch ($step.Status) { "PASS" { "PASS" } "FAIL" { "**FAIL**" } "SKIP" { "SKIP" } }
+    $null = $lines.Add("| $stepNum | $($step.Section) | ${bt}$($step.Name)${bt} | $icon |")
 }
+
+# ============================
+# Rust test breakdown by crate
+# ============================
+
+$cargoTestStep = $steps | Where-Object { $_.Name -eq "cargo test" } | Select-Object -First 1
+
+$null = $lines.Add("")
+$null = $lines.Add("---")
+$null = $lines.Add("")
+$null = $lines.Add("## Rust Test Breakdown")
+
+if ($cargoTestStep -and $cargoTestStep.Output) {
+    $cargoOutput = $cargoTestStep.Output -split "\r?\n"
+
+    # Parse: "Running unittests src/lib.rs (target\debug\deps\spdf_core-xxx)"
+    # Followed by test lines, then "test result: ok. N passed; ..."
+    $rustModules = [System.Collections.ArrayList]::new()
+    $currentCrate = ""
+    $rustTotalPassed = 0
+    $rustTotalFailed = 0
+    $rustWarnings = [System.Collections.ArrayList]::new()
+
+    foreach ($rline in $cargoOutput) {
+        # Detect crate being compiled/tested
+        if ($rline -match "Running\s+(unittests\s+)?(.+?)\s+\(") {
+            $currentCrate = $Matches[2]
+            # Clean up: extract just the source file path
+            if ($currentCrate -match "([^/\\]+)\.rs$") {
+                # keep as-is
+            }
+        }
+        # Detect doc-tests
+        if ($rline -match "Doc-tests\s+(\S+)") {
+            $currentCrate = "doc-tests/$($Matches[1])"
+        }
+        # Detect "Compiling" to get crate names
+        if ($rline -match "^\s*Compiling\s+(\S+)\s+v") {
+            # just informational, skip
+        }
+        # Parse test result lines
+        if ($rline -match "test result: ok\.\s+(\d+) passed;\s+(\d+) failed;") {
+            $passed = [int]$Matches[1]
+            $failed = [int]$Matches[2]
+            if ($passed -gt 0 -or $failed -gt 0) {
+                $null = $rustModules.Add(@{
+                    Source = $currentCrate
+                    Passed = $passed
+                    Failed = $failed
+                })
+                $rustTotalPassed += $passed
+                $rustTotalFailed += $failed
+            }
+        }
+        if ($rline -match "test result: FAILED\.\s+(\d+) passed;\s+(\d+) failed;") {
+            $passed = [int]$Matches[1]
+            $failed = [int]$Matches[2]
+            $null = $rustModules.Add(@{
+                Source = $currentCrate
+                Passed = $passed
+                Failed = $failed
+            })
+            $rustTotalPassed += $passed
+            $rustTotalFailed += $failed
+        }
+        # Capture Rust warnings
+        if ($rline -match "^warning(\[.+?\])?:\s+(.+)") {
+            $warnText = $rline.Trim()
+            if ($warnText -notmatch "generated \d+ warning") {
+                $null = $rustWarnings.Add($warnText)
+            }
+        }
+    }
+
+    if ($rustModules.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("| Module | Passed | Failed |")
+        $null = $lines.Add("|--------|--------|--------|")
+        foreach ($mod in $rustModules) {
+            $failStr = if ($mod.Failed -gt 0) { "**$($mod.Failed)**" } else { "0" }
+            $null = $lines.Add("| ${bt}$($mod.Source)${bt} | $($mod.Passed) | $failStr |")
+        }
+        $null = $lines.Add("| **Total** | **$rustTotalPassed** | **$rustTotalFailed** |")
+    } else {
+        $null = $lines.Add("")
+        $null = $lines.Add("*No Rust test results found.*")
+    }
+
+    # Rust warnings
+    if ($rustWarnings.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("### Rust Warnings ($($rustWarnings.Count))")
+        $null = $lines.Add("")
+        $null = $lines.Add("${bt}${bt}${bt}text")
+        foreach ($rw in $rustWarnings) {
+            $null = $lines.Add($rw)
+        }
+        $null = $lines.Add("${bt}${bt}${bt}")
+    }
+} else {
+    $null = $lines.Add("")
+    $null = $lines.Add("*Rust tests were not run.*")
+}
+
+# ================================
+# Python test breakdown by module
+# ================================
+
+$pytestStep = $steps | Where-Object { $_.Name -eq "pytest" } | Select-Object -First 1
+
+$null = $lines.Add("")
+$null = $lines.Add("---")
+$null = $lines.Add("")
+$null = $lines.Add("## Python Test Breakdown")
+
+if ($pytestStep -and $pytestStep.Output) {
+    $pyOutput = $pytestStep.Output -split "\r?\n"
+
+    # Parse pytest -v output lines like: "api/tests/test_documents.py::test_name PASSED"
+    $pyModuleCounts = [ordered]@{}
+    $pyTotalPassed = 0
+    $pyTotalFailed = 0
+    $pyTotalSkipped = 0
+    $pyWarnings = [System.Collections.ArrayList]::new()
+    $inWarnings = $false
+
+    foreach ($pline in $pyOutput) {
+        # Match pytest verbose result lines
+        if ($pline -match "^(api/tests/\S+\.py)::\S+\s+(PASSED|FAILED|SKIPPED|ERROR|XFAIL|XPASS)") {
+            $module = $Matches[1]
+            $result = $Matches[2]
+            if (-not $pyModuleCounts.Contains($module)) {
+                $pyModuleCounts[$module] = @{ Passed=0; Failed=0; Skipped=0 }
+            }
+            switch ($result) {
+                "PASSED"  { $pyModuleCounts[$module].Passed++; $pyTotalPassed++ }
+                "FAILED"  { $pyModuleCounts[$module].Failed++; $pyTotalFailed++ }
+                "SKIPPED" { $pyModuleCounts[$module].Skipped++; $pyTotalSkipped++ }
+                "XFAIL"   { $pyModuleCounts[$module].Skipped++; $pyTotalSkipped++ }
+                "ERROR"   { $pyModuleCounts[$module].Failed++; $pyTotalFailed++ }
+            }
+        }
+        # Also match Windows-style paths (backslash)
+        if ($pline -match "^(api\\tests\\\S+\.py)::\S+\s+(PASSED|FAILED|SKIPPED|ERROR|XFAIL|XPASS)") {
+            $module = ($Matches[1] -replace "\\", "/")
+            $result = $Matches[2]
+            if (-not $pyModuleCounts.Contains($module)) {
+                $pyModuleCounts[$module] = @{ Passed=0; Failed=0; Skipped=0 }
+            }
+            switch ($result) {
+                "PASSED"  { $pyModuleCounts[$module].Passed++; $pyTotalPassed++ }
+                "FAILED"  { $pyModuleCounts[$module].Failed++; $pyTotalFailed++ }
+                "SKIPPED" { $pyModuleCounts[$module].Skipped++; $pyTotalSkipped++ }
+                "XFAIL"   { $pyModuleCounts[$module].Skipped++; $pyTotalSkipped++ }
+                "ERROR"   { $pyModuleCounts[$module].Failed++; $pyTotalFailed++ }
+            }
+        }
+
+        # Capture warnings section
+        if ($pline -match "^={2,}\s*warnings summary\s*={2,}$") {
+            $inWarnings = $true
+            continue
+        }
+        if ($inWarnings) {
+            if ($pline -match "^={2,}\s*" -or $pline -match "^-{2,}\s*") {
+                $inWarnings = $false
+                continue
+            }
+            $trimmed = $pline.Trim()
+            if ($trimmed -ne "" -and $trimmed -ne "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html") {
+                $null = $pyWarnings.Add($trimmed)
+            }
+        }
+    }
+
+    if ($pyModuleCounts.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("| Module | Passed | Failed | Skipped |")
+        $null = $lines.Add("|--------|--------|--------|---------|")
+        foreach ($modKey in $pyModuleCounts.Keys) {
+            $mc = $pyModuleCounts[$modKey]
+            $modName = $modKey -replace "^api/tests/", ""
+            $failStr = if ($mc.Failed -gt 0) { "**$($mc.Failed)**" } else { "0" }
+            $skipStr = if ($mc.Skipped -gt 0) { "$($mc.Skipped)" } else { "0" }
+            $null = $lines.Add("| ${bt}$modName${bt} | $($mc.Passed) | $failStr | $skipStr |")
+        }
+        $null = $lines.Add("| **Total** | **$pyTotalPassed** | **$pyTotalFailed** | **$pyTotalSkipped** |")
+    } else {
+        $null = $lines.Add("")
+        $null = $lines.Add("*No Python test results found (could not parse pytest -v output).*")
+    }
+
+    # Python warnings
+    if ($pyWarnings.Count -gt 0) {
+        $null = $lines.Add("")
+        $null = $lines.Add("### Python Warnings ($($pyWarnings.Count))")
+        $null = $lines.Add("")
+        $null = $lines.Add("${bt}${bt}${bt}text")
+        foreach ($pw in $pyWarnings) {
+            $null = $lines.Add($pw)
+        }
+        $null = $lines.Add("${bt}${bt}${bt}")
+    }
+
+    # Python summary line (the final pytest summary)
+    $pySummaryLine = $pyOutput | Where-Object { $_ -match "^\s*={2,}.*(passed|failed|error).*={2,}\s*$" } | Select-Object -Last 1
+    if ($pySummaryLine) {
+        $null = $lines.Add("")
+        $null = $lines.Add("**Summary:** ${bt}$($pySummaryLine.Trim())${bt}")
+    }
+} else {
+    $null = $lines.Add("")
+    $null = $lines.Add("*Python tests were not run.*")
+}
+
+# ================================
+# Grand total
+# ================================
+
+$null = $lines.Add("")
+$null = $lines.Add("---")
+$null = $lines.Add("")
+$null = $lines.Add("## Grand Total")
+$null = $lines.Add("")
+
+$grandPassed = $rustTotalPassed + $pyTotalPassed
+$grandFailed = $rustTotalFailed + $pyTotalFailed
+$grandSkipped = $pyTotalSkipped
+$grandTotal = $grandPassed + $grandFailed + $grandSkipped
+
+$null = $lines.Add("| | Passed | Failed | Skipped | Total |")
+$null = $lines.Add("|--|--------|--------|---------|-------|")
+$null = $lines.Add("| Rust | $rustTotalPassed | $rustTotalFailed | 0 | $($rustTotalPassed + $rustTotalFailed) |")
+$null = $lines.Add("| Python | $pyTotalPassed | $pyTotalFailed | $pyTotalSkipped | $($pyTotalPassed + $pyTotalFailed + $pyTotalSkipped) |")
+$null = $lines.Add("| **Total** | **$grandPassed** | **$grandFailed** | **$grandSkipped** | **$grandTotal** |")
 
 # --- Failure details ---
 
@@ -187,40 +427,6 @@ if ($failCount -gt 0) {
             $null = $lines.Add("${bt}${bt}${bt}")
         }
     }
-} else {
-    $null = $lines.Add("")
-    $null = $lines.Add("---")
-    $null = $lines.Add("")
-    $null = $lines.Add("All checks passed. No errors to report.")
-}
-
-# --- Test summary ---
-
-$null = $lines.Add("")
-$null = $lines.Add("---")
-$null = $lines.Add("")
-$null = $lines.Add("## Test Summary")
-
-$cargoTestStep = $steps | Where-Object { $_.Name -eq "cargo test" } | Select-Object -First 1
-if ($cargoTestStep -and $cargoTestStep.Output) {
-    $testResultLines = @($cargoTestStep.Output -split "\r?\n" | Where-Object { $_ -match "^test result:" })
-    if ($testResultLines.Count -gt 0) {
-        $null = $lines.Add("")
-        $null = $lines.Add("### Rust")
-        foreach ($tl in $testResultLines) {
-            $null = $lines.Add("- ${bt}$($tl.Trim())${bt}")
-        }
-    }
-}
-
-$pytestStep = $steps | Where-Object { $_.Name -eq "pytest" } | Select-Object -First 1
-if ($pytestStep -and $pytestStep.Output) {
-    $summaryLine = $pytestStep.Output -split "\r?\n" | Where-Object { $_ -match "passed|failed|error|skipped" } | Select-Object -Last 1
-    if ($summaryLine) {
-        $null = $lines.Add("")
-        $null = $lines.Add("### Python")
-        $null = $lines.Add("- ${bt}$($summaryLine.Trim())${bt}")
-    }
 }
 
 # Write report
@@ -231,9 +437,11 @@ if ($pytestStep -and $pytestStep.Output) {
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 if ($allPass) {
-    Write-Host "  ALL CHECKS PASSED ($passCount/$totalCount)" -ForegroundColor Green
+    Write-Host "  ALL CHECKS PASSED ($passCount/$totalCount steps)" -ForegroundColor Green
+    Write-Host "  Tests: $grandPassed passed, $grandFailed failed, $grandSkipped skipped ($grandTotal total)" -ForegroundColor Green
 } else {
-    Write-Host "  CHECKS FAILING ($failCount/$totalCount failed)" -ForegroundColor Red
+    Write-Host "  CHECKS FAILING ($failCount/$totalCount steps failed)" -ForegroundColor Red
+    Write-Host "  Tests: $grandPassed passed, $grandFailed failed, $grandSkipped skipped ($grandTotal total)" -ForegroundColor Red
 }
 Write-Host "  Report: $reportFile" -ForegroundColor White
 Write-Host "========================================" -ForegroundColor Cyan

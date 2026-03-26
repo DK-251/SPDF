@@ -26,9 +26,10 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 - Middleware supports dual auth: `sk_` prefix -> API key, `eyJ` prefix -> JWT
 - UserStore: added `email` field, `find_by_email()`, `update_tier()` methods
 - Conftest: JWT fixtures, subscription/template store resets
+- `check.ps1` overhauled: per-crate Rust breakdown, per-module Python breakdown, warnings capture, grand total table
 
 ### Build Target
-- [ ] just check -- pending TUF verification
+- [x] just check -- ALL PASS (93 Rust + 116 Python tests, 18 warnings)
 
 ---
 

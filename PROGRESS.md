@@ -6,7 +6,7 @@
 ## Current State
 - **Version:** 0.1.0-snapshot.8
 - **Phase:** 2 — Backend API
-- **Status:** Week 4 in progress — JWT auth, billing, webhooks, templates implemented, pending TUF verification
+- **Status:** Week 4 complete — JWT auth, billing, webhooks, templates all green on TUF
 
 ---
 
