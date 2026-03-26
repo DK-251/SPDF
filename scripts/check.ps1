@@ -129,9 +129,9 @@ $hasNode = Get-Command node -ErrorAction SilentlyContinue
 if ($hasNode -and (Test-Path "studio/package.json")) {
     Write-Host ""
     Write-Host "=== Studio ===" -ForegroundColor Cyan
-    $null = $steps.Add((Run-Step "Studio" "npm ci" "cd studio; npm ci --prefer-offline 2>&1"))
-    $null = $steps.Add((Run-Step "Studio" "vitest" "cd studio; npx vitest run 2>&1"))
-    $null = $steps.Add((Run-Step "Studio" "vite build" "cd studio; npx vite build 2>&1"))
+    $null = $steps.Add((Run-Step "Studio" "npm ci" "cd studio; npm ci --prefer-offline"))
+    $null = $steps.Add((Run-Step "Studio" "vitest" "cd studio; npx vitest run"))
+    $null = $steps.Add((Run-Step "Studio" "vite build" "cd studio; npx vite build"))
 } else {
     if (-not $hasNode) {
         Write-Host ""
