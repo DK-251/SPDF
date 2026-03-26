@@ -59,6 +59,45 @@ class SpdfEngine:
         return json.loads(raw)
 
     @staticmethod
+    def sign(spdf_bytes: bytes, signer_name: str, signer_email: str) -> bytes:
+        """Sign an SPDF document. Must be in Review state. Returns signed bytes."""
+        return bytes(spdf_native.sign_document(spdf_bytes, signer_name, signer_email))
+
+    @staticmethod
+    def verify(spdf_bytes: bytes) -> dict[str, Any]:
+        """Verify all signatures in an SPDF document."""
+        raw = spdf_native.verify_document(spdf_bytes)
+        return json.loads(raw)
+
+    @staticmethod
+    def diff(doc_a_bytes: bytes, doc_b_bytes: bytes) -> dict[str, Any]:
+        """Compare two SPDF documents. Returns the diff report dict."""
+        raw = spdf_native.diff_documents(doc_a_bytes, doc_b_bytes)
+        return json.loads(raw)
+
+    @staticmethod
+    def redact(spdf_bytes: bytes, target_eid: str, reason: str) -> bytes:
+        """Redact an element from an SPDF document. Returns updated bytes."""
+        return bytes(spdf_native.redact_element(spdf_bytes, target_eid, reason))
+
+    @staticmethod
+    def verify_redaction(spdf_bytes: bytes, redaction_eid: str) -> dict[str, Any]:
+        """Verify a redaction exists and return its proof hash."""
+        raw = spdf_native.verify_redaction(spdf_bytes, redaction_eid)
+        return json.loads(raw)
+
+    @staticmethod
+    def list_redactions(spdf_bytes: bytes) -> list[dict[str, Any]]:
+        """List all redactions in an SPDF document."""
+        raw = spdf_native.list_redactions(spdf_bytes)
+        return json.loads(raw)
+
+    @staticmethod
+    def transition(spdf_bytes: bytes, target_state: str) -> bytes:
+        """Transition a document to a new state. Returns updated bytes."""
+        return bytes(spdf_native.transition_document(spdf_bytes, target_state))
+
+    @staticmethod
     def version() -> str:
         """Return the underlying Rust engine version."""
         return spdf_native.version()

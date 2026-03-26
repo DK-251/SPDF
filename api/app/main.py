@@ -3,11 +3,14 @@
 Run with: uvicorn app.main:app --reload --port 8000
 """
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.errors import register_exception_handlers
 from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.request_id import RequestIdMiddleware
 from app.routers import account, billing, documents, templates, webhooks
 from app.services.api_keys import seed_test_user
 
@@ -17,10 +20,13 @@ app = FastAPI(
     description="Structured PDF document generation, validation, and extraction API",
 )
 
+app.add_middleware(RequestIdMiddleware)
 app.add_middleware(RateLimitMiddleware)
+
+cors_origins = os.environ.get("SPDF_CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

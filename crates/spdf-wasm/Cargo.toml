@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 spdf-core = { path = "../spdf-core" }
+spdf-validator = { path = "../spdf-validator" }
 wasm-bindgen = "0.2"
 serde.workspace = true
 serde_json.workspace = true

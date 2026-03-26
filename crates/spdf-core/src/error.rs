@@ -41,6 +41,18 @@ pub enum SpdfError {
 
     #[error("decompression ratio exceeded: {ratio:.2} (max: {max:.2})")]
     DecompressionBomb { ratio: f64, max: f64 },
+
+    #[error("signing error: {0}")]
+    Signing(String),
+
+    #[error("wrong document state: expected {expected:?}, got {actual:?}")]
+    WrongState {
+        expected: crate::types::DocumentState,
+        actual: crate::types::DocumentState,
+    },
+
+    #[error("redaction error: {0}")]
+    Redaction(String),
 }
 
 pub type SpdfResult<T> = Result<T, SpdfError>;

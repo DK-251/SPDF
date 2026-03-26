@@ -10,6 +10,32 @@ Format: `MAJOR.MINOR.PATCH-snapshot.N`
 
 ---
 
+## [0.1.0-snapshot.13] - 2026-03-26
+
+### Added
+- **Document signing** (`spdf-core/src/signing.rs`): SHA-256 simple signing, verification, and state transitions. `sign_document_simple()`, `verify_document_simple()`, `transition_document()`
+- **Semantic diff engine** (`spdf-core/src/diff.rs`): Element-level comparison with impact classification (None → Critical). `diff_documents()` with DiffReport, DiffChange, SemanticImpact types
+- **Redaction support** (`spdf-core/src/redaction.rs`): Replace elements with SHA-256 proof-hashed redaction markers. `redact_element()`, `list_redactions()`, `verify_redaction()`
+- **Element::eid() method** (`spdf-core/src/dom.rs`): Accessor across all 18 element variants, used by diff and redaction
+- **API endpoints**: `POST /sign`, `/verify`, `/transition`, `/diff`, `/redact`, `/redactions`, `/verify-redaction`
+- **Request ID middleware** (`api/app/middleware/request_id.py`): UUID4 per request, passthrough of client `X-Request-Id`
+- **WASM bindings** (`spdf-wasm/src/lib.rs`): 6 functions — validate, get_document_info, verify, diff_documents, list_redactions, extract_invoice
+- 49 new Rust tests (signing: 15, diff: 12, redaction: 12, WASM: 10)
+- 46 new Python tests (signing: 12, diff: 10, redaction: 10, hardening: 14)
+- New SpdfError variants: `Signing(String)`, `WrongState { expected, actual }`, `Redaction(String)`
+
+### Changed
+- CORS origins configurable via `SPDF_CORS_ORIGINS` env var (was `["*"]`, now defaults to `http://localhost:5173`)
+- All error responses include `request_id` field
+- Rate limit middleware passes request_id on 401/429 responses
+- Pydantic `ErrorDetail` schema added for standardized error responses
+- `rebuild_container_with_signatures` made public for reuse by redaction module
+
+### Build Target
+- [ ] just check — pending TUF build (142 Rust + 162 Python = 304 tests expected)
+
+---
+
 ## [0.1.0-snapshot.8] - 2026-03-26
 
 ### Added

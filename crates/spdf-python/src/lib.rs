@@ -9,9 +9,12 @@ use pyo3::prelude::*;
 
 use serde_json::json;
 use spdf_core::container::{self, ContainerLayers};
+use spdf_core::diff;
 use spdf_core::dom::{Document, Element};
 use spdf_core::manifest::Manifest;
-use spdf_core::types::GeneratorInfo;
+use spdf_core::redaction;
+use spdf_core::signing;
+use spdf_core::types::{DocumentState, GeneratorInfo};
 use spdf_core::SpdfError;
 
 fn spdf_err(e: SpdfError) -> PyErr {
@@ -169,6 +172,63 @@ fn extract_invoice_data(spdf_bytes: &[u8]) -> PyResult<String> {
     serde_json::to_string(&result).map_err(|e| spdf_err(SpdfError::Json(e)))
 }
 
+/// Sign an SPDF document (must be in Review state). Returns signed .spdf bytes.
+#[pyfunction]
+fn sign_document(spdf_bytes: &[u8], signer_name: &str, signer_email: &str) -> PyResult<Vec<u8>> {
+    signing::sign_document_simple(spdf_bytes, signer_name, signer_email).map_err(spdf_err)
+}
+
+/// Verify all signatures in an SPDF document. Returns VerificationReport as JSON string.
+#[pyfunction]
+fn verify_document(spdf_bytes: &[u8]) -> PyResult<String> {
+    let report = signing::verify_document_simple(spdf_bytes).map_err(spdf_err)?;
+    serde_json::to_string(&report).map_err(|e| spdf_err(SpdfError::Json(e)))
+}
+
+/// Compare two SPDF documents. Returns DiffReport as JSON string.
+#[pyfunction]
+fn diff_documents(doc_a_bytes: &[u8], doc_b_bytes: &[u8]) -> PyResult<String> {
+    let report = diff::diff_documents(doc_a_bytes, doc_b_bytes).map_err(spdf_err)?;
+    serde_json::to_string(&report).map_err(|e| spdf_err(SpdfError::Json(e)))
+}
+
+/// Redact an element from an SPDF document. Returns updated .spdf bytes.
+#[pyfunction]
+fn redact_element(spdf_bytes: &[u8], target_eid: &str, reason: &str) -> PyResult<Vec<u8>> {
+    redaction::redact_element(spdf_bytes, target_eid, reason).map_err(spdf_err)
+}
+
+/// List all redactions in an SPDF document. Returns JSON string.
+#[pyfunction]
+fn list_redactions(spdf_bytes: &[u8]) -> PyResult<String> {
+    let entries = redaction::list_redactions(spdf_bytes).map_err(spdf_err)?;
+    serde_json::to_string(&entries).map_err(|e| spdf_err(SpdfError::Json(e)))
+}
+
+/// Verify a redaction by EID. Returns JSON string.
+#[pyfunction]
+fn verify_redaction(spdf_bytes: &[u8], redaction_eid: &str) -> PyResult<String> {
+    let result = redaction::verify_redaction(spdf_bytes, redaction_eid).map_err(spdf_err)?;
+    serde_json::to_string(&result).map_err(|e| spdf_err(SpdfError::Json(e)))
+}
+
+/// Transition a document to a new state. Returns updated .spdf bytes.
+#[pyfunction]
+fn transition_document(spdf_bytes: &[u8], target_state: &str) -> PyResult<Vec<u8>> {
+    let state = match target_state {
+        "DRAFT" => DocumentState::Draft,
+        "REVIEW" => DocumentState::Review,
+        "SIGNED" => DocumentState::Signed,
+        "CERTIFIED" => DocumentState::Certified,
+        _ => {
+            return Err(PyValueError::new_err(format!(
+                "invalid state: {target_state}"
+            )))
+        }
+    };
+    signing::transition_document(spdf_bytes, state).map_err(spdf_err)
+}
+
 #[pyfunction]
 fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -182,5 +242,12 @@ fn spdf_native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(render_to_pdf, m)?)?;
     m.add_function(wrap_pyfunction!(parse_semantic, m)?)?;
     m.add_function(wrap_pyfunction!(extract_invoice_data, m)?)?;
+    m.add_function(wrap_pyfunction!(sign_document, m)?)?;
+    m.add_function(wrap_pyfunction!(verify_document, m)?)?;
+    m.add_function(wrap_pyfunction!(diff_documents, m)?)?;
+    m.add_function(wrap_pyfunction!(redact_element, m)?)?;
+    m.add_function(wrap_pyfunction!(list_redactions, m)?)?;
+    m.add_function(wrap_pyfunction!(verify_redaction, m)?)?;
+    m.add_function(wrap_pyfunction!(transition_document, m)?)?;
     Ok(())
 }

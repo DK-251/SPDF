@@ -59,6 +59,31 @@ pub enum Element {
     VariablePlaceholder(VariablePlaceholderElement),
 }
 
+impl Element {
+    pub fn eid(&self) -> &ElementId {
+        match self {
+            Element::Heading(e) => &e.eid,
+            Element::Paragraph(e) => &e.eid,
+            Element::Table(e) => &e.eid,
+            Element::Image(e) => &e.eid,
+            Element::VectorImage(e) => &e.eid,
+            Element::CodeBlock(e) => &e.eid,
+            Element::HorizontalRule(e) => &e.eid,
+            Element::PageBreak(e) => &e.eid,
+            Element::Attachment(e) => &e.eid,
+            Element::InvoiceHeader(e) => &e.eid,
+            Element::LineItemTable(e) => &e.eid,
+            Element::PaymentTerms(e) => &e.eid,
+            Element::SignatureBlock(e) => &e.eid,
+            Element::Stamp(e) => &e.eid,
+            Element::Annotation(e) => &e.eid,
+            Element::Redaction(e) => &e.eid,
+            Element::FormField(e) => &e.eid,
+            Element::VariablePlaceholder(e) => &e.eid,
+        }
+    }
+}
+
 // --- Content element structs ---
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

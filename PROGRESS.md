@@ -4,9 +4,9 @@
 > Updated every snapshot. Maps directly to Dev Plan V2.
 
 ## Current State
-- **Version:** 0.1.0-snapshot.8
+- **Version:** 0.1.0-snapshot.13
 - **Phase:** 2 — Backend API
-- **Status:** Week 4 complete — JWT auth, billing, webhooks, templates all green on TUF
+- **Status:** Week 5 complete — signing, diff, redaction, API hardening, WASM bindings
 
 ---
 
@@ -58,10 +58,11 @@
 
 | Day | Task | Status | Snapshot | Notes |
 |-----|------|--------|----------|-------|
-| 21-23 | Extraction, validation, redaction | TODO | — | |
-| 24-25 | Signing & verification | TODO | — | |
-| 26-27 | Semantic diff | TODO | — | |
-| 28-30 | API hardening | TODO | — | |
+| 21-22 | Document signing (SHA-256 simple) | DONE | 0.1.0-s.9 | sign, verify, transition; 15 Rust + 12 Python tests |
+| 23-24 | Semantic diff engine | DONE | 0.1.0-s.10 | Element::eid(), impact classification; 12 Rust + 10 Python tests |
+| 25-26 | Redaction support | DONE | 0.1.0-s.11 | Erasure proof hash, list/verify; 12 Rust + 10 Python tests |
+| 27-28 | API hardening | DONE | 0.1.0-s.12 | Request IDs, CORS tightening, error standardization; 14 Python tests |
+| 29-30 | WASM bindings | DONE | 0.1.0-s.13 | 6 functions exposed, internal helper tests; 10 Rust tests |
 
 ---
 

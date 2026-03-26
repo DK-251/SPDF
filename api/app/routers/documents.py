@@ -2,17 +2,23 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, Form, UploadFile
 from fastapi.responses import Response
 
 from app.errors import SpdfApiError, handle_engine_error
 from app.schemas import (
+    DiffReport,
     GenerateRequest,
     HealthResponse,
     InvoiceData,
     ParseRequest,
     ParseResponse,
+    RedactionListResponse,
+    RedactionVerification,
+    SignResponse,
+    TransitionRequest,
     ValidationReport,
+    VerificationReport,
 )
 from app.services.spdf_engine import SpdfEngine
 
@@ -126,3 +132,107 @@ async def extract_invoice(file: UploadFile) -> InvoiceData:
     except ValueError as exc:
         raise handle_engine_error(exc) from exc
     return InvoiceData(**invoice)
+
+
+@router.post("/documents/sign")
+async def sign_document(
+    file: UploadFile,
+    signer_name: str = Form(...),
+    signer_email: str = Form(...),
+) -> Response:
+    """Sign an SPDF document (must be in Review state)."""
+    data = await read_upload(file)
+    try:
+        signed_bytes = SpdfEngine.sign(data, signer_name, signer_email)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return Response(
+        content=signed_bytes,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": 'attachment; filename="signed.spdf"'},
+    )
+
+
+@router.post("/documents/verify", response_model=VerificationReport)
+async def verify_document(file: UploadFile) -> VerificationReport:
+    """Verify all signatures in an SPDF document."""
+    data = await read_upload(file)
+    try:
+        report = SpdfEngine.verify(data)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return VerificationReport(**report)
+
+
+@router.post("/documents/transition")
+async def transition_document(
+    file: UploadFile,
+    target_state: str = Form(...),
+) -> Response:
+    """Transition a document to a new state."""
+    data = await read_upload(file)
+    try:
+        result_bytes = SpdfEngine.transition(data, target_state)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return Response(
+        content=result_bytes,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": 'attachment; filename="transitioned.spdf"'},
+    )
+
+
+@router.post("/documents/diff", response_model=DiffReport)
+async def diff_documents(file_a: UploadFile, file_b: UploadFile) -> DiffReport:
+    """Compare two SPDF documents and return a semantic diff report."""
+    data_a = await read_upload(file_a)
+    data_b = await read_upload(file_b)
+    try:
+        report = SpdfEngine.diff(data_a, data_b)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return DiffReport(**report)
+
+
+@router.post("/documents/redact")
+async def redact_document(
+    file: UploadFile,
+    target_eid: str = Form(...),
+    reason: str = Form(...),
+) -> Response:
+    """Redact an element from an SPDF document."""
+    data = await read_upload(file)
+    try:
+        redacted_bytes = SpdfEngine.redact(data, target_eid, reason)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return Response(
+        content=redacted_bytes,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": 'attachment; filename="redacted.spdf"'},
+    )
+
+
+@router.post("/documents/redactions", response_model=RedactionListResponse)
+async def list_redactions(file: UploadFile) -> RedactionListResponse:
+    """List all redactions in an SPDF document."""
+    data = await read_upload(file)
+    try:
+        entries = SpdfEngine.list_redactions(data)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return RedactionListResponse(redactions=entries)
+
+
+@router.post("/documents/verify-redaction", response_model=RedactionVerification)
+async def verify_redaction(
+    file: UploadFile,
+    redaction_eid: str = Form(...),
+) -> RedactionVerification:
+    """Verify a redaction by its EID."""
+    data = await read_upload(file)
+    try:
+        result = SpdfEngine.verify_redaction(data, redaction_eid)
+    except ValueError as exc:
+        raise handle_engine_error(exc) from exc
+    return RedactionVerification(**result)

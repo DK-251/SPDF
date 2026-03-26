@@ -7,6 +7,15 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
+# --- Error ---
+
+
+class ErrorDetail(BaseModel):
+    error: str
+    detail: str
+    request_id: str | None = None
+
+
 # --- Generation ---
 
 
@@ -149,3 +158,83 @@ class TemplateListResponse(BaseModel):
     items: list[TemplateResponse]
     next_cursor: str | None = None
     has_more: bool = False
+
+
+# --- Signing ---
+
+
+class SignResponse(BaseModel):
+    message: str = "Document signed successfully"
+    signer_name: str
+    signer_email: str
+
+
+class SignatureVerificationItem(BaseModel):
+    signature_id: str
+    signer_name: str
+    signer_email: str
+    valid: bool
+    expected_hash: str
+    actual_hash: str
+
+
+class VerificationReport(BaseModel):
+    valid: bool
+    tamper_detected: bool
+    signature_count: int
+    signatures: list[SignatureVerificationItem]
+
+
+class TransitionRequest(BaseModel):
+    target_state: str
+
+
+# --- Diff ---
+
+
+# --- Redaction ---
+
+
+class RedactionListEntry(BaseModel):
+    eid: str
+    redacted_eid: str
+    reason: str
+    erasure_proof_hash: str
+
+
+class RedactionListResponse(BaseModel):
+    redactions: list[RedactionListEntry]
+
+
+class RedactionVerification(BaseModel):
+    redaction_eid: str
+    redacted_eid: str
+    proof_hash: str
+    found: bool
+
+
+# --- Diff ---
+
+
+class DiffChange(BaseModel):
+    change_type: str
+    eid: str
+    element_type: str
+    field: str | None = None
+    old_value: Any | None = None
+    new_value: Any | None = None
+    impact: str
+
+
+class DiffSummary(BaseModel):
+    added: int
+    removed: int
+    modified: int
+    total_changes: int
+    highest_impact: str
+
+
+class DiffReport(BaseModel):
+    metadata_changes: list[DiffChange]
+    element_changes: list[DiffChange]
+    summary: DiffSummary

@@ -48,9 +48,20 @@ def _today_utc() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
-def _error_response(status_code: int, error: str, detail: str, headers: dict[str, str] | None = None) -> Response:
-    body = json.dumps({"error": error, "detail": detail})
+def _error_response(
+    status_code: int,
+    error: str,
+    detail: str,
+    headers: dict[str, str] | None = None,
+    request_id: str | None = None,
+) -> Response:
+    body_dict: dict[str, str] = {"error": error, "detail": detail}
+    if request_id:
+        body_dict["request_id"] = request_id
+    body = json.dumps(body_dict)
     h = {"content-type": "application/json"}
+    if request_id:
+        h["X-Request-Id"] = request_id
     if headers:
         h.update(headers)
     return Response(content=body, status_code=status_code, headers=h)
@@ -59,6 +70,7 @@ def _error_response(status_code: int, error: str, detail: str, headers: dict[str
 class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         path = request.url.path
+        request_id = getattr(request.state, "request_id", None)
 
         # Public paths skip auth and rate limiting
         if path in PUBLIC_PATHS:
@@ -67,11 +79,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # --- Authentication (API key OR JWT) ---
         auth_header = request.headers.get("authorization", "")
         if not auth_header.startswith("Bearer "):
-            return _error_response(401, UNAUTHORIZED, "Missing or malformed Authorization header.")
+            return _error_response(401, UNAUTHORIZED, "Missing or malformed Authorization header.", request_id=request_id)
 
         token = auth_header[7:]  # strip "Bearer "
         if not token:
-            return _error_response(401, UNAUTHORIZED, "Token is empty.")
+            return _error_response(401, UNAUTHORIZED, "Token is empty.", request_id=request_id)
 
         user = None
 
@@ -89,10 +101,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 if email:
                     user = user_store.find_by_email(email)
             except Exception:
-                return _error_response(401, UNAUTHORIZED, "Invalid or expired JWT token.")
+                return _error_response(401, UNAUTHORIZED, "Invalid or expired JWT token.", request_id=request_id)
 
         if not user:
-            return _error_response(401, UNAUTHORIZED, "Invalid credentials.")
+            return _error_response(401, UNAUTHORIZED, "Invalid credentials.", request_id=request_id)
 
         request.state.user = user
         user_store.touch_last_used(user["id"])
@@ -121,6 +133,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 429,
                 RATE_LIMIT_EXCEEDED,
                 f"Rate limit exceeded for {family}. Resets at UTC midnight.",
+                request_id=request_id,
                 headers={
                     "X-RateLimit-Limit": str(limit),
                     "X-RateLimit-Remaining": "0",

@@ -43,6 +43,13 @@ ENDPOINT_FAMILIES: dict[str, str] = {
     "/api/v1/billing/checkout": "other",
     "/api/v1/billing/portal": "other",
     "/api/v1/billing/subscription": "other",
+    "/api/v1/documents/sign": "sign",
+    "/api/v1/documents/verify": "other",
+    "/api/v1/documents/transition": "other",
+    "/api/v1/documents/diff": "other",
+    "/api/v1/documents/redact": "other",
+    "/api/v1/documents/redactions": "other",
+    "/api/v1/documents/verify-redaction": "other",
 }
 
 # Paths that bypass auth and rate limiting entirely

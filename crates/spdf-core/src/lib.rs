@@ -7,9 +7,12 @@
 //! - Document state machine (DRAFT -> REVIEW -> SIGNED -> CERTIFIED)
 
 pub mod container;
+pub mod diff;
 pub mod dom;
 pub mod error;
 pub mod manifest;
+pub mod redaction;
+pub mod signing;
 pub mod types;
 
 pub use error::SpdfError;
