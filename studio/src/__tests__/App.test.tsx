@@ -20,8 +20,9 @@ describe("App", () => {
   it("renders the sidebar with navigation links", () => {
     renderApp();
     expect(screen.getByText("SPDF Studio")).toBeInTheDocument();
-    expect(screen.getByText("Documents")).toBeInTheDocument();
-    expect(screen.getByText("Generate")).toBeInTheDocument();
+    // "Documents" and "Generate" appear in both sidebar and page content
+    expect(screen.getAllByText("Documents").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Generate").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Templates")).toBeInTheDocument();
     expect(screen.getByText("Settings")).toBeInTheDocument();
   });

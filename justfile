@@ -87,6 +87,17 @@ studio-build:
 studio-test:
     cd studio; npm test
 
+# --- Dev Servers ---
+
+# Run check, then launch API + Studio with log capture (Ctrl+C to stop)
+dev:
+    powershell -ExecutionPolicy Bypass -File scripts/check.ps1
+    powershell -ExecutionPolicy Bypass -File scripts/dev.ps1
+
+# Launch API + Studio WITHOUT running check first (quick start)
+dev-quick:
+    powershell -ExecutionPolicy Bypass -File scripts/dev.ps1
+
 # --- Cross-cutting ---
 
 # Run all tests across the entire project
