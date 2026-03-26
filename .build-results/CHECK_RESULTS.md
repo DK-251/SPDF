@@ -4,11 +4,11 @@
 | Field | Value |
 |-------|-------|
 | Version | 0.1.0-snapshot.14 |
-| Commit | `665e60f` |
+| Commit | `7c354b0` |
 | Branch | main |
-| Date | 2026-03-26T11:12:59Z |
+| Date | 2026-03-26T11:24:14Z |
 | Machine | TUF_WARRIOR_DK |
-| Overall | **FAILING** (8 pass, 1 fail, 0 skip / 9 steps) |
+| Overall | **ALL PASS** (9 pass, 0 fail, 0 skip / 9 steps) |
 
 ## Steps
 
@@ -21,7 +21,7 @@
 | 5 | Python | `maturin develop` | PASS |
 | 6 | Python | `pytest` | PASS |
 | 7 | Studio | `npm install` | PASS |
-| 8 | Studio | `vitest` | **FAIL** |
+| 8 | Studio | `vitest` | PASS |
 | 9 | Studio | `vite build` | PASS |
 
 ---
@@ -90,15 +90,15 @@ D:\SPDF DEVELOPMENT\SPDF\.venv\Lib\site-packages\jwt\api_jwt.py:147: InsecureKey
 return self._jws.encode(
 ```
 
-**Summary:** `====================== 157 passed, 18 warnings in 5.76s =======================`
+**Summary:** `====================== 157 passed, 18 warnings in 5.78s =======================`
 
 ---
 
 ## Studio Test Breakdown
 
-*Vitest: 0 passed, 1 failed*
+*Vitest: 0 passed, 0 failed*
 
-**Summary:** `[2m   Duration [22m 3.94s[2m (transform 1.33s, setup 3.00s, collect 8.19s, tests 2.75s, environment 13.40s, prepare 5.88s)[22m`
+**Summary:** `[2m   Duration [22m 4.09s[2m (transform 1.19s, setup 3.10s, collect 8.25s, tests 2.12s, environment 15.88s, prepare 6.89s)[22m`
 
 ---
 
@@ -108,117 +108,5 @@ return self._jws.encode(
 |--|--------|--------|---------|-------|
 | Rust | 140 | 0 | 0 | 140 |
 | Python | 157 | 0 | 0 | 157 |
-| Studio | 0 | 1 | 0 | 1 |
-| **Total** | **297** | **1** | **0** | **298** |
-
----
-
-## Failure Details
-
-### Studio: vitest
-Exit code: 1
-
-*(truncated to last 100 lines)*
-
-```text
-              [33mstroke-linejoin[31m=[32m"round"[31m
-              [33mstroke-width[31m=[32m"2"[31m
-              [33mviewBox[31m=[32m"0 0 24 24"[31m
-              [33mwidth[31m=[32m"24"[31m
-              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
-            [36m>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"[31m
-              [36m/>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M14 2v4a2 2 0 0 0 2 2h4"[31m
-              [36m/>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M10 9H8"[31m
-              [36m/>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M16 13H8"[31m
-              [36m/>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M16 17H8"[31m
-              [36m/>[31m
-            [36m</svg>[31m
-            [36m<span>[31m
-              [0mDocuments[0m
-            [36m</span>[31m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-accent/50 hover:text-foreground"[31m
-            [33mhref[31m=[32m"/generate"[31m
-          [36m>[31m
-            [36m<svg[31m
-              [33mclass[31m=[32m"lucide lucide-plus h-4 w-4 shrink-0"[31m
-              [33mfill[31m=[32m"none"[31m
-              [33mheight[31m=[32m"24"[31m
-              [33mstroke[31m=[32m"currentColor"[31m
-              [33mstroke-linecap[31m=[32m"round"[31m
-              [33mstroke-linejoin[31m=[32m"round"[31m
-              [33mstroke-width[31m=[32m"2"[31m
-              [33mviewBox[31m=[32m"0 0 24 24"[31m
-              [33mwidth[31m=[32m"24"[31m
-              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
-            [36m>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M5 12h14"[31m
-              [36m/>[31m
-              [36m<path[31m
-                [33md[31m=[32m"M12 5v14"[31m
-              [36m/>[31m
-            [36m</svg>[31m
-            [36m<span>[31m
-              [0mGenerate[0m
-            [36m</span>[31m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-accent/50 hover:text-foreground"[31m
-            [33mhref[31m=[32m"/templates"[31m
-          [36m>[31m
-            [36m<svg[31m
-              [33mclass[31m=[32m"lucide lucide-layout-template h-4 w-4 shrink-0"[31m
-              [33mfill[31m=[32m"none"[31m
-              [33mheight[31m=[32m"24"[31m
-              [33mstroke[31m=[32m"currentColor"[31m
-              [33mstroke-linecap[31m=[32m"round"[31m
-              [33mstroke-linejoin[31m=[32m"round"[31m
-              [33mstroke-width[31m=[32m"2"[31m
-              [33mviewBox[31m=[32m"0 0 24 24"[31m
-              [33mwidth[31m=[32m"24"[31m
-              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
-            [36m>[31m
-              [36m<rect[31m
-                [33mheight[31m=[32m"7"[31m
-                [33mrx[31m=[32m"1"[31m
-                [33mwidth[31m=[32m"18"[31m
-                [33mx[31m=[32m"3"[31m
-                [33my[31m=[32m"3"[31m
-              [36m/>[31m
-              [36m<rect[31m
-                [33mheight[31m=[32m"7"[31m
-                [33mrx[31m=[32m"1"[31m
-                [33mwidth[31m=[32m"9"[31m
-                [33mx[31m=[32m"3"[31m
-                [33my[31m=[32m"14"[31m
-              [36m/>[31m
-              [36m<rect[31m
-                [33mheight[31m=[32m"7"[31m
-                [33mrx[31m=[32m"1"[31m
-                [33mwidth[31m=[32m"5"[31m
-                [33mx[31m=[32m"16"[31m
-                [33my[31m=[32m"14"[31m
-              [36m/>[31m
-            [36m</svg>[31m
-            [36m<span>[31m
-              [0mTemplates[0m
-            [36m</s...[39m
- [32mΓ£ô[39m src/__tests__/auth-store.test.ts [2m ([22m[2m4 tests[22m[2m)[22m[90m 3[2mms[22m[39m
-
-[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (12)[39m
-[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m69 passed[39m[22m[90m (70)[39m
-[2m   Start at [22m 16:44:00
-[2m   Duration [22m 3.94s[2m (transform 1.33s, setup 3.00s, collect 8.19s, tests 2.75s, environment 13.40s, prepare 5.88s)[22m
-```
+| Studio | 0 | 0 | 0 | 0 |
+| **Total** | **297** | **0** | **0** | **297** |

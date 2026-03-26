@@ -37,8 +37,6 @@ studio/.vite/
 Thumbs.db
 desktop.ini
 
-# Build results (tracked selectively)
-.build-results/*.log
 
 # Coverage
 htmlcov/
