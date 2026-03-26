@@ -1,10 +1,10 @@
 ﻿# CHECK RESULTS
 
 ## Run Info
-- **Version:** 0.1.0-snapshot.7
-- **Commit:** 32fa87c
+- **Version:** 0.1.0-snapshot.8
+- **Commit:** 70fe7b9
 - **Branch:** main
-- **Date:** 2026-03-25T18:47:14Z
+- **Date:** 2026-03-26T05:56:35Z
 - **Machine:** TUF_WARRIOR_DK
 - **Overall:** ALL PASS (6 pass, 0 fail, 0 skip / 6 total)
 
@@ -30,12 +30,12 @@ All checks passed. No errors to report.
 
 ### Rust
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s`
-- `test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s`
+- `test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s`
+- `test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s`
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
-- `test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s`
-- `test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s`
+- `test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s`
+- `test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s`
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
 - `test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s`
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
@@ -45,4 +45,4 @@ All checks passed. No errors to report.
 - `test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s`
 
 ### Python
-- `============================= 61 passed in 4.81s ==============================`
+- `====================== 116 passed, 18 warnings in 8.68s =======================`
