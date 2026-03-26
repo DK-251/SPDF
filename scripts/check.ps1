@@ -413,11 +413,13 @@ $null = $lines.Add("")
 $null = $lines.Add("## Studio Test Breakdown")
 
 if ($vitestStep -and $vitestStep.Output) {
-    $vitestOutput = $vitestStep.Output -split "\r?\n"
+    # Strip ANSI escape codes before parsing
+    $cleanOutput = $vitestStep.Output -replace '\x1B\[[0-9;]*[A-Za-z]', ''
+    $vitestOutput = $cleanOutput -split "\r?\n"
 
     # Parse vitest output: "Tests  42 passed (42)"  or "Tests  3 failed | 39 passed (42)"
     foreach ($vline in $vitestOutput) {
-        if ($vline -match "Tests\s+(\d+)\s+passed") {
+        if ($vline -match "Tests\s+.*?(\d+)\s+passed") {
             $studioTotalPassed = [int]$Matches[1]
         }
         if ($vline -match "(\d+)\s+failed") {
@@ -426,11 +428,13 @@ if ($vitestStep -and $vitestStep.Output) {
     }
 
     # Parse per-file results: " PASS  src/__tests__/App.test.tsx (5 tests)"
+    # Also matches vitest checkmark format: " ✓ src/__tests__/App.test.tsx (5 tests)"
     $studioFiles = [System.Collections.ArrayList]::new()
     foreach ($vline in $vitestOutput) {
-        if ($vline -match "(PASS|FAIL)\s+(\S+\.test\.\S+)\s*\((\d+)\s+test") {
+        if ($vline -match "(PASS|FAIL|✓|×)\s+(\S+\.test\.\S+)\s*\(?(\d+)\s+test") {
+            $fStatus = if ($Matches[1] -eq "FAIL" -or $Matches[1] -eq "×") { "FAIL" } else { "PASS" }
             $null = $studioFiles.Add(@{
-                Status = $Matches[1]
+                Status = $fStatus
                 File   = $Matches[2]
                 Count  = [int]$Matches[3]
             })
@@ -451,8 +455,8 @@ if ($vitestStep -and $vitestStep.Output) {
         $null = $lines.Add("*Vitest: $studioTotalPassed passed, $studioTotalFailed failed*")
     }
 
-    # Vitest summary line
-    $vitestSummary = $vitestOutput | Where-Object { $_ -match "Tests\s+\d+" } | Select-Object -Last 1
+    # Vitest summary line (from clean output)
+    $vitestSummary = $vitestOutput | Where-Object { $_ -match "Tests\s+.*\d+" } | Select-Object -Last 1
     if ($vitestSummary) {
         $null = $lines.Add("")
         $null = $lines.Add("**Summary:** ${bt}$($vitestSummary.Trim())${bt}")
