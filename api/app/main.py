@@ -20,8 +20,8 @@ app = FastAPI(
     description="Structured PDF document generation, validation, and extraction API",
 )
 
-app.add_middleware(RequestIdMiddleware)
 app.add_middleware(RateLimitMiddleware)
+app.add_middleware(RequestIdMiddleware)
 
 cors_origins = os.environ.get("SPDF_CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(

@@ -18,8 +18,7 @@ pub fn validate_internal(spdf_bytes: &[u8]) -> Result<String, String> {
 
     let manifest_report = spdf_validator::validate_manifest(&extracted.manifest);
 
-    let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
     let document_report = spdf_validator::validate_document(&doc);
 
     let combined = serde_json::json!({
@@ -36,8 +35,7 @@ pub fn validate_internal(spdf_bytes: &[u8]) -> Result<String, String> {
 pub fn get_document_info_internal(spdf_bytes: &[u8]) -> Result<String, String> {
     let extracted = container::read_container(spdf_bytes).map_err(|e| e.to_string())?;
 
-    let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
 
     let total_elements: usize = doc.pages.iter().map(|p| p.elements.len()).sum();
 
@@ -72,8 +70,7 @@ pub fn list_redactions_internal(spdf_bytes: &[u8]) -> Result<String, String> {
 pub fn extract_invoice_internal(spdf_bytes: &[u8]) -> Result<String, String> {
     let extracted = container::read_container(spdf_bytes).map_err(|e| e.to_string())?;
 
-    let doc: Document =
-        serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
+    let doc: Document = serde_json::from_slice(&extracted.semantic).map_err(|e| e.to_string())?;
 
     let mut invoice_header = None;
     let mut payment_terms = None;

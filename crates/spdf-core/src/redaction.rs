@@ -32,11 +32,7 @@ pub struct RedactionVerification {
 ///
 /// Replaces the target element with a `RedactionElement` containing the
 /// SHA-256 erasure proof hash of the original element's JSON serialization.
-pub fn redact_element(
-    spdf_bytes: &[u8],
-    target_eid: &str,
-    reason: &str,
-) -> SpdfResult<Vec<u8>> {
+pub fn redact_element(spdf_bytes: &[u8], target_eid: &str, reason: &str) -> SpdfResult<Vec<u8>> {
     let extracted = read_container(spdf_bytes)?;
     let mut doc: Document = serde_json::from_slice(&extracted.semantic)?;
 

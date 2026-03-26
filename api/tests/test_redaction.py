@@ -33,8 +33,6 @@ def test_redact_element(
 ) -> None:
     if not engine_available:
         pytest.skip("spdf_native not available")
-    spdf_bytes, eid = _get_element_eid(client, sample_semantic, "Paragraph")
-    # Use Heading instead since we have one
     spdf_bytes, eid = _get_element_eid(client, sample_semantic, "Heading")
     resp = client.post(
         "/api/v1/documents/redact",

@@ -85,10 +85,7 @@ fn title_change_detected() {
     let report = diff_documents(&bytes_a, &bytes_b).unwrap();
 
     assert_eq!(report.metadata_changes.len(), 1);
-    assert_eq!(
-        report.metadata_changes[0].field.as_deref(),
-        Some("title")
-    );
+    assert_eq!(report.metadata_changes[0].field.as_deref(), Some("title"));
     assert_eq!(report.metadata_changes[0].impact, SemanticImpact::Moderate);
 }
 

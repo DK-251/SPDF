@@ -240,8 +240,8 @@ fn verify_tampered_document_detects_tampering() {
 
     let mut buf = Vec::new();
     let mut zip_w = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-    let opts =
-        zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+    let opts = zip::write::SimpleFileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated);
     let stored =
         zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
 

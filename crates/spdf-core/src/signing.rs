@@ -129,19 +129,8 @@ pub fn sign_document_simple(
         });
     }
 
-    let content_hash = compute_content_hash(&extracted);
     let now = Utc::now();
     let now_str = now.format("%Y-%m-%dT%H:%M:%S%.3fZ").to_string();
-
-    let sig_id = format!("sig-{}", uuid::Uuid::new_v4());
-    let record = SignatureRecord {
-        signature_id: sig_id,
-        signer_name: signer_name.to_string(),
-        signer_email: signer_email.to_string(),
-        signed_at: now_str.clone(),
-        content_hash,
-        algorithm: "SHA256_SIMPLE".to_string(),
-    };
 
     doc.document_state = DocumentState::Signed;
 
@@ -155,6 +144,26 @@ pub fn sign_document_simple(
     }
 
     let new_semantic = serde_json::to_vec_pretty(&doc)?;
+
+    // Hash the FINAL content that will be stored in the container
+    let content_hash = {
+        let mut combined = Vec::new();
+        combined.extend_from_slice(&new_semantic);
+        combined.extend_from_slice(&extracted.layout);
+        combined.extend_from_slice(&extracted.styles);
+        combined.extend_from_slice(&extracted.metadata);
+        sha256_hex(&combined)
+    };
+
+    let sig_id = format!("sig-{}", uuid::Uuid::new_v4());
+    let record = SignatureRecord {
+        signature_id: sig_id,
+        signer_name: signer_name.to_string(),
+        signer_email: signer_email.to_string(),
+        signed_at: now_str.clone(),
+        content_hash,
+        algorithm: "SHA256_SIMPLE".to_string(),
+    };
 
     let mut audit: serde_json::Value = serde_json::from_slice(&extracted.audit)?;
     let entries = audit
@@ -243,10 +252,7 @@ pub fn verify_document_simple(spdf_bytes: &[u8]) -> SpdfResult<VerificationRepor
 ///
 /// Validates the transition is allowed, updates the semantic layer,
 /// and appends a `STATE_CHANGED` audit event.
-pub fn transition_document(
-    spdf_bytes: &[u8],
-    target_state: DocumentState,
-) -> SpdfResult<Vec<u8>> {
+pub fn transition_document(spdf_bytes: &[u8], target_state: DocumentState) -> SpdfResult<Vec<u8>> {
     let extracted = read_container(spdf_bytes)?;
     let mut doc: Document = serde_json::from_slice(&extracted.semantic)?;
 

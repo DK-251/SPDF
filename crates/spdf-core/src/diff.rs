@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use crate::container::read_container;
 use crate::dom::{Document, Element};
 use crate::error::SpdfResult;
-use crate::types::ElementId;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -209,8 +208,8 @@ pub fn diff_documents(doc_a_bytes: &[u8], doc_b_bytes: &[u8]) -> SpdfResult<Diff
             eid: "document".to_string(),
             element_type: "Document".to_string(),
             field: Some("direction".to_string()),
-            old_value: Some(serde_json::to_value(&doc_a.direction).unwrap_or_default()),
-            new_value: Some(serde_json::to_value(&doc_b.direction).unwrap_or_default()),
+            old_value: Some(serde_json::to_value(doc_a.direction).unwrap_or_default()),
+            new_value: Some(serde_json::to_value(doc_b.direction).unwrap_or_default()),
             impact: SemanticImpact::Minor,
         });
     }
@@ -220,8 +219,8 @@ pub fn diff_documents(doc_a_bytes: &[u8], doc_b_bytes: &[u8]) -> SpdfResult<Diff
             eid: "document".to_string(),
             element_type: "Document".to_string(),
             field: Some("document_state".to_string()),
-            old_value: Some(serde_json::to_value(&doc_a.document_state).unwrap_or_default()),
-            new_value: Some(serde_json::to_value(&doc_b.document_state).unwrap_or_default()),
+            old_value: Some(serde_json::to_value(doc_a.document_state).unwrap_or_default()),
+            new_value: Some(serde_json::to_value(doc_b.document_state).unwrap_or_default()),
             impact: SemanticImpact::Critical,
         });
     }
